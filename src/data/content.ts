@@ -62,7 +62,8 @@ export const githubContent: Record<string, {
   mockDemo?: {
     avatar: string;
     user: string;
-    time: string;
+    userTag?: string;
+    time?: string;
     title: string;
     body?: string;
     codeBlock?: string;
@@ -101,15 +102,15 @@ export const githubContent: Record<string, {
     installCommand: 'pip install huggingface-slack-app',
     mockDemo: {
       avatar: 'https://avatars.githubusercontent.com/u/1463491',
-      user: 'huggingface[bot]',
-      time: '2h ago',
+      user: 'HuggingFace',
+      userTag: 'App',
       title: '🎉 embedl released 2 new models!',
       body: '',
       modelLinks: [
-        { name: 'embedl/Cosmos-Reason2-2B-W4A16-Edge2-FlashHead', downloads: 730, hearts: 6 },
-        { name: 'embedl/Cosmos-Reason2-2B-W4A16', downloads: 2304, hearts: 6 },
+        { name: 'embedl/gemma-3-1b-it-FlashHead-W4A16', downloads: 138, hearts: 3 },
+        { name: 'embedl/Qwen3-1.7B-FlashHead-W4A16', downloads: 105, hearts: 3 },
       ],
-      codeBlock: '/hf subscribe embedl/Cosmos-Reason2-2B-W4A16-Edge2-FlashHead\n/hf subscribe embedl/Cosmos-Reason2-2B-W4A16',
+      codeBlock: '/hf subscribe embedl/gemma-3-1b-it-FlashHead-W4A16\n/hf subscribe embedl/Qwen3-1.7B-FlashHead-W4A16',
       tags: ['Model Release', 'New'],
       link: 'https://huggingface.co/embedl',
       reactions: [

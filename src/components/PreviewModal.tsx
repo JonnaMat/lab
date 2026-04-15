@@ -3,6 +3,12 @@ import { useCanvasStore } from '../store/canvasStore';
 import { articleContent, githubContent, getSlug, getRepo } from '../data/content';
 import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon } from './Icons';
 
+interface GitHubStats {
+  stars: number;
+  forks: number;
+  language: string;
+}
+
 function AnimatedNumber({ value, suffix = '' }: { value: number; suffix?: string }) {
   const [display, setDisplay] = useState(0);
   const prevValue = useRef(value);
@@ -32,19 +38,14 @@ function AnimatedNumber({ value, suffix = '' }: { value: number; suffix?: string
   return <span>{display.toLocaleString()}{suffix}</span>;
 }
 
-interface GitHubStats {
-  stars: number;
-  forks: number;
-  language: string;
-}
-
 export function PreviewModal() {
   const previewCard = useCanvasStore((s) => s.previewCard);
   const closePreview = useCanvasStore((s) => s.closePreview);
   const overlayRef = useRef<HTMLDivElement>(null);
   const [stats, setStats] = useState<GitHubStats | null>(null);
-  const [modelStats, setModelStats] = useState<Record<string, { downloads: number; likes: number }>>({});
+  const [modelStats, setModelStats] = useState<Record<string, { downloads: number; likes: number; lastModified: string }>>({});
   const [activeReactions, setActiveReactions] = useState<Set<string>>(new Set());
+  const [timeAgo, setTimeAgo] = useState('');
 
   const isGitHub = previewCard?.cardType === 'github';
   const isArxiv = previewCard?.cardType === 'arxiv';
@@ -55,6 +56,7 @@ export function PreviewModal() {
   const content = articleContent[slug];
   const ghContent = githubContent[ghSlug];
   const mockDemo = ghContent?.mockDemo;
+  const firstModelName = mockDemo?.modelLinks?.[0]?.name;
 
   useEffect(() => {
     if (!repo) return;
@@ -73,12 +75,53 @@ export function PreviewModal() {
           const data = await res.json();
           setModelStats(prev => ({
             ...prev,
-            [model.name]: { downloads: data.downloads || 0, likes: data.likes || 0 }
+            [model.name]: { downloads: data.downloads || 0, likes: data.likes || 0, lastModified: data.lastModified || '' }
           }));
         } catch {
           setModelStats(prev => ({
             ...prev,
-            [model.name]: { downloads: model.downloads, likes: model.hearts }
+            [model.name]: { downloads: model.downloads, likes: model.hearts, lastModified: '' }
+          }));
+        }
+      }
+    };
+    fetchModelStats();
+  }, [mockDemo?.modelLinks]);
+
+  useEffect(() => {
+    if (!firstModelName || !modelStats[firstModelName]?.lastModified) return;
+    const lastMod = new Date(modelStats[firstModelName].lastModified);
+    const now = new Date();
+    const diffMs = now.getTime() - lastMod.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 60) setTimeAgo(`${diffMins}m ago`);
+    else if (diffMins < 1440) setTimeAgo(`${Math.floor(diffMins / 60)}h ago`);
+    else setTimeAgo(`${Math.floor(diffMins / 1440)}d ago`);
+  }, [modelStats, firstModelName]);
+
+  useEffect(() => {
+    if (!repo) return;
+    fetch(`https://api.github.com/repos/${repo.owner}/${repo.repo}`)
+      .then(r => r.json())
+      .then(data => setStats({ stars: data.stargazers_count || 0, forks: data.forks_count || 0, language: data.language || 'Python' }))
+      .catch(() => setStats(null));
+  }, [repo]);
+
+  useEffect(() => {
+    if (!mockDemo?.modelLinks) return;
+    const fetchModelStats = async () => {
+      for (const model of mockDemo.modelLinks!) {
+        try {
+          const res = await fetch(`https://huggingface.co/api/models/${model.name}`);
+          const data = await res.json();
+          setModelStats(prev => ({
+            ...prev,
+            [model.name]: { downloads: data.downloads || 0, likes: data.likes || 0, lastModified: data.lastModified || '' }
+          }));
+        } catch {
+          setModelStats(prev => ({
+            ...prev,
+            [model.name]: { downloads: model.downloads, likes: model.hearts, lastModified: '' }
           }));
         }
       }
@@ -155,7 +198,10 @@ export function PreviewModal() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="text-white font-medium text-sm">{ghContent.mockDemo.user}</span>
-                        <span className="text-white/40 text-xs">· {ghContent.mockDemo.time}</span>
+                        {ghContent.mockDemo.userTag && (
+                          <span className="px-1.5 py-0.5 text-[10px] rounded bg-[#1c9dae]/30 text-[#1c9dae]">{ghContent.mockDemo.userTag}</span>
+                        )}
+                        <span className="text-white/40 text-xs">· {timeAgo}</span>
                       </div>
                       {ghContent.mockDemo.title && (
                         <div className="text-white font-medium text-sm mb-2">{ghContent.mockDemo.title}</div>
@@ -168,7 +214,7 @@ export function PreviewModal() {
                           {ghContent.mockDemo.modelLinks.map((model, i) => {
                             const stats = modelStats[model.name];
                             return (
-                              <div key={i}>
+                              <div key={i} className="flex items-center gap-2">
                                 <a
                                   href={`https://huggingface.co/${model.name}`}
                                   target="_blank"
@@ -177,18 +223,20 @@ export function PreviewModal() {
                                 >
                                   {model.name}
                                 </a>
-                                <div className="text-xs text-white/50 mt-0.5">
-                                  <span><AnimatedNumber value={stats?.downloads || model.downloads} /> downloads</span>
-                                  <span className="mx-1.5">·</span>
-                                  <span><AnimatedNumber value={stats?.likes || model.hearts} /> ❤️</span>
-                                </div>
+                                <span className="text-xs text-white/50">
+                                  <AnimatedNumber value={stats?.downloads || model.downloads} /> downloads
+                                </span>
+                                <span className="text-white/30">·</span>
+                                <span className="text-xs text-white/50">
+                                  <AnimatedNumber value={stats?.likes || model.hearts} /> ❤️
+                                </span>
                               </div>
                             );
                           })}
                         </div>
                       )}
                       {ghContent.mockDemo.codeBlock && (
-                        <div className="bg-[#0a0e10] rounded-lg p-3 mb-3 font-mono text-xs text-[#1c9dae] border border-[#1c9dae]/30">
+                        <div className="bg-[#0a0e10] rounded-lg p-3 mb-3 font-mono text-xs text-[#1c9dae] border border-[#1c9dae]/30 whitespace-pre-wrap">
                           {ghContent.mockDemo.codeBlock}
                         </div>
                       )}
@@ -367,4 +415,10 @@ export function PreviewModal() {
       </div>
     </div>
   );
+}
+
+interface GitHubStats {
+  stars: number;
+  forks: number;
+  language: string;
 }
