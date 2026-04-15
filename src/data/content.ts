@@ -76,7 +76,7 @@ export const githubContent: Record<string, {
     reactions?: {
       emoji: string;
       count: number;
-      active: boolean;
+      active?: boolean;
     }[];
   };
 }> = {
@@ -103,7 +103,7 @@ export const githubContent: Record<string, {
       avatar: 'https://avatars.githubusercontent.com/u/1463491',
       user: 'huggingface[bot]',
       time: '2h ago',
-      title: ':tada: embedl released 2 new models!',
+      title: '🎉 embedl released 2 new models!',
       body: '',
       modelLinks: [
         { name: 'embedl/Cosmos-Reason2-2B-W4A16-Edge2-FlashHead', downloads: 730, hearts: 6 },

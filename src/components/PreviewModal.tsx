@@ -3,6 +3,35 @@ import { useCanvasStore } from '../store/canvasStore';
 import { articleContent, githubContent, getSlug, getRepo } from '../data/content';
 import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon } from './Icons';
 
+function AnimatedNumber({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const [display, setDisplay] = useState(0);
+  const prevValue = useRef(value);
+
+  useEffect(() => {
+    const start = prevValue.current;
+    const end = value;
+    const duration = 800;
+    const startTime = performance.now();
+
+    const animate = (currentTime: number) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const current = Math.round(start + (end - start) * eased);
+      setDisplay(current);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+    prevValue.current = value;
+  }, [value]);
+
+  return <span>{display.toLocaleString()}{suffix}</span>;
+}
+
 interface GitHubStats {
   stars: number;
   forks: number;
@@ -15,6 +44,7 @@ export function PreviewModal() {
   const overlayRef = useRef<HTMLDivElement>(null);
   const [stats, setStats] = useState<GitHubStats | null>(null);
   const [modelStats, setModelStats] = useState<Record<string, { downloads: number; likes: number }>>({});
+  const [activeReactions, setActiveReactions] = useState<Set<string>>(new Set());
 
   const isGitHub = previewCard?.cardType === 'github';
   const isArxiv = previewCard?.cardType === 'arxiv';
@@ -91,8 +121,8 @@ export function PreviewModal() {
 
             {stats && (
               <div className="flex gap-6 mb-6 pb-6 border-b border-white/10">
-                <div className="text-center"><div className="text-2xl font-bold text-white">{stats.stars.toLocaleString()}</div><div className="text-xs text-gray-400 uppercase">Stars</div></div>
-                <div className="text-center"><div className="text-2xl font-bold text-white">{stats.forks.toLocaleString()}</div><div className="text-xs text-gray-400 uppercase">Forks</div></div>
+                <div className="text-center"><div className="text-2xl font-bold text-white"><AnimatedNumber value={stats.stars} /></div><div className="text-xs text-gray-400 uppercase">Stars</div></div>
+                <div className="text-center"><div className="text-2xl font-bold text-white"><AnimatedNumber value={stats.forks} /></div><div className="text-xs text-gray-400 uppercase">Forks</div></div>
                 <div className="text-center"><div className="text-2xl font-bold text-white">{stats.language}</div><div className="text-xs text-gray-400 uppercase">Language</div></div>
               </div>
             )}
@@ -127,6 +157,9 @@ export function PreviewModal() {
                         <span className="text-white font-medium text-sm">{ghContent.mockDemo.user}</span>
                         <span className="text-white/40 text-xs">· {ghContent.mockDemo.time}</span>
                       </div>
+                      {ghContent.mockDemo.title && (
+                        <div className="text-white font-medium text-sm mb-2">{ghContent.mockDemo.title}</div>
+                      )}
                       {ghContent.mockDemo.body && (
                         <div className="text-white text-sm whitespace-pre-wrap leading-relaxed mb-2">{ghContent.mockDemo.body}</div>
                       )}
@@ -145,9 +178,9 @@ export function PreviewModal() {
                                   {model.name}
                                 </a>
                                 <div className="text-xs text-white/50 mt-0.5">
-                                  <span>{(stats?.downloads || model.downloads).toLocaleString()} downloads</span>
+                                  <span><AnimatedNumber value={stats?.downloads || model.downloads} /> downloads</span>
                                   <span className="mx-1.5">·</span>
-                                  <span>{stats?.likes || model.hearts} ❤️</span>
+                                  <span><AnimatedNumber value={stats?.likes || model.hearts} /> ❤️</span>
                                 </div>
                               </div>
                             );
@@ -159,11 +192,26 @@ export function PreviewModal() {
                           {ghContent.mockDemo.codeBlock}
                         </div>
                       )}
-                      <div className="flex gap-2 flex-wrap mb-3">
-                        {ghContent.mockDemo.tags.map((tag, i) => (
-                          <span key={i} className="px-2 py-0.5 text-xs rounded bg-[#1c9dae]/30 text-[#1c9dae]">{tag}</span>
-                        ))}
-                      </div>
+                      {ghContent.mockDemo.reactions && (
+                        <div className="flex items-center gap-2">
+                          {ghContent.mockDemo.reactions.map((reaction, i) => {
+                            const isActive = activeReactions.has(reaction.emoji);
+                            const count = reaction.count + (isActive ? 1 : 0);
+                            return (
+                              <button
+                                key={i}
+                                onClick={() => setActiveReactions(prev => { const next = new Set(prev); isActive ? next.delete(reaction.emoji) : next.add(reaction.emoji); return next; })}
+                                className={`flex items-center gap-1 px-2 py-1 rounded-full text-sm border transition-all ${
+                                  isActive ? 'bg-[#1c9dae]/30 border-[#1c9dae] text-[#1c9dae]' : 'bg-transparent border-white/20 text-white/60 hover:border-white/40'
+                                }`}
+                              >
+                                <span>{reaction.emoji}</span>
+                                <span className="text-xs">{count}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
