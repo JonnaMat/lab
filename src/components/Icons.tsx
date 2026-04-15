@@ -21,3 +21,9 @@ export const ExternalLinkIcon = ({ className = 'w-3.5 h-3.5' }: { className?: st
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
   </svg>
 );
+
+import arxivLogo from '../assets/arxiv-logomark-small.svg';
+
+export const ArxivIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
+  <img src={arxivLogo} alt="arXiv" className={className} />
+);

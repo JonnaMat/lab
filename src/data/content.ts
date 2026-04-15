@@ -4,7 +4,25 @@ export const articleContent: Record<string, {
   tags: string[];
   image?: string;
   keyPoints?: string[];
+  authors?: string[];
+  subjects?: string[];
+  published?: string;
 }> = {
+  '2603.14591': {
+    hook: 'FlashHead reframes token prediction as a retrieval problem, achieving up to 1.75× model-level inference speedup while maintaining accuracy.',
+    quote: 'Generating the next token is not a dense matrix multiplication problem; it is a retrieval problem.',
+    tags: ['LLM Optimization', 'Inference', 'Information Retrieval'],
+    authors: ['Wilhelm Tranheden', 'Shahnawaz Ahmed', 'Devdatt Dubhashi', 'Jonna Matthiesen', 'Hannes von Essen'],
+    subjects: ['Machine Learning (cs.LG)', 'Artificial Intelligence (cs.AI)', 'Information Retrieval (cs.IR)'],
+    published: 'Submitted on 15 Mar 2026',
+    keyPoints: [
+      'Training-free drop-in replacement for dense classification head',
+      'Balanced clustering for hardware-efficient vocabulary partitioning',
+      'Multi-probe retrieval enabling thousands of clusters in parallel',
+      'Selective quantization for effective low-bit computation',
+      '1.75× speedup on Llama-3.2, Gemma-3, and Qwen-3',
+    ],
+  },
   'how-to-vllm-plugin': {
     hook: 'A practical guide to building vLLM plugins using the general_plugins entry point. Covers architecture registration, monkey-patching internals, and real-world examples from FlashHead.',
     quote: '"Just pip install and run" was a distant dream.',
@@ -41,6 +59,26 @@ export const githubContent: Record<string, {
   description: string;
   features: string[];
   installCommand: string;
+  mockDemo?: {
+    avatar: string;
+    user: string;
+    time: string;
+    title: string;
+    body?: string;
+    codeBlock?: string;
+    modelLinks?: {
+      name: string;
+      downloads: number;
+      hearts: number;
+    }[];
+    tags: string[];
+    link: string;
+    reactions?: {
+      emoji: string;
+      count: number;
+      active: boolean;
+    }[];
+  };
 }> = {
   'embedl-flash-head': {
     description: 'Drop-in replacement for the LM head. Up to 2× model-level inference speedup while maintaining accuracy — training-free and hardware-friendly.',
@@ -51,6 +89,35 @@ export const githubContent: Record<string, {
       'Quantized model support out of the box',
     ],
     installCommand: 'pip install flash-head',
+  },
+  'JonnaMat-huggingface-slack-app': {
+    description: 'Custom GitHub Slack bot integration with Hugging Face. Get GitHub notifications directly in Slack with customizable alerts.',
+    features: [
+      'Custom Slack bot for GitHub integration',
+      'HF Spaces, models, and datasets notifications',
+      'Pull request and issue notifications',
+      'Configurable alert triggers',
+    ],
+    installCommand: 'pip install huggingface-slack-app',
+    mockDemo: {
+      avatar: 'https://avatars.githubusercontent.com/u/1463491',
+      user: 'huggingface[bot]',
+      time: '2h ago',
+      title: ':tada: embedl released 2 new models!',
+      body: '',
+      modelLinks: [
+        { name: 'embedl/Cosmos-Reason2-2B-W4A16-Edge2-FlashHead', downloads: 730, hearts: 6 },
+        { name: 'embedl/Cosmos-Reason2-2B-W4A16', downloads: 2304, hearts: 6 },
+      ],
+      codeBlock: '/hf subscribe embedl/Cosmos-Reason2-2B-W4A16-Edge2-FlashHead\n/hf subscribe embedl/Cosmos-Reason2-2B-W4A16',
+      tags: ['Model Release', 'New'],
+      link: 'https://huggingface.co/embedl',
+      reactions: [
+        { emoji: '❤️', count: 6, active: false },
+        { emoji: '🎉', count: 3, active: false },
+        { emoji: '🚀', count: 2, active: false },
+      ],
+    },
   },
 };
 
