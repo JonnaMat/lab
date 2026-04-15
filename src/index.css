@@ -58,4 +58,130 @@ body {
     font-family: monospace;
     font-size: 0.75rem;
   }
+
+  .markdown-body {
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    color: #f8f8f2;
+  }
+
+  .markdown-body h1,
+  .markdown-body h2,
+  .markdown-body h3,
+  .markdown-body h4 {
+    color: #f8f8f2;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    font-weight: 600;
+  }
+
+  .markdown-body h1 { font-size: 1.75rem; border-bottom: 1px solid #44475a; padding-bottom: 0.3em; }
+  .markdown-body h2 { font-size: 1.4rem; }
+  .markdown-body h3 { font-size: 1.15rem; color: #8be9fd; }
+
+  .markdown-body p {
+    margin-bottom: 1em;
+    color: #f8f8f2cc;
+  }
+
+  .markdown-body a {
+    color: #50fa7b;
+    text-decoration: none;
+  }
+
+  .markdown-body a:hover {
+    text-decoration: underline;
+  }
+
+  .markdown-body code {
+    background: #44475a;
+    padding: 0.2em 0.4em;
+    border-radius: 4px;
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 0.875em;
+    color: #ff79c6;
+  }
+
+  .markdown-body pre {
+    background: #21222c;
+    border: 1px solid #44475a;
+    border-radius: 8px;
+    padding: 1em;
+    overflow-x: auto;
+    margin: 1em 0;
+  }
+
+  .markdown-body pre code {
+    background: transparent;
+    padding: 0;
+    color: #f8f8f2;
+  }
+
+  .markdown-body blockquote {
+    border-left: 3px solid #bd93f9;
+    padding-left: 1em;
+    margin: 1em 0;
+    color: #6272a4;
+    font-style: italic;
+  }
+
+  .markdown-body ul,
+  .markdown-body ol {
+    padding-left: 1.5em;
+    margin-bottom: 1em;
+    color: #f8f8f2cc;
+  }
+
+  .markdown-body li {
+    margin-bottom: 0.3em;
+  }
+
+  .markdown-body table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+  }
+
+  .markdown-body th,
+  .markdown-body td {
+    border: 1px solid #44475a;
+    padding: 0.5em 0.75em;
+    text-align: left;
+  }
+
+  .markdown-body th {
+    background: #44475a;
+    font-weight: 600;
+  }
+
+  .markdown-body tr:nth-child(even) {
+    background: #343746;
+  }
+
+  .markdown-body img {
+    max-width: 100%;
+    border-radius: 8px;
+    margin: 1em 0;
+  }
+
+  .markdown-body hr {
+    border: none;
+    border-top: 1px solid #44475a;
+    margin: 2em 0;
+  }
+
+  .markdown-body strong {
+    color: #f8f8f2;
+    font-weight: 600;
+  }
+
+  .markdown-body em {
+    color: #ffb86c;
+  }
+
+  .markdown-body table.hljs {
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
 }
