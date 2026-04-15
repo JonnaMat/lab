@@ -1,135 +1,123 @@
-import { useRef, useCallback } from 'react';
+import { useRef } from 'react';
 import { CardData } from '../data/initialCards';
 import { useCardDrag } from '../hooks/useCardDrag';
 import { useCanvasStore } from '../store/canvasStore';
+import { GitHubIcon } from './Icons';
 
-interface CardProps {
-  card: CardData;
-  isDraggingAnother: boolean;
-}
+const articleContent: Record<string, { summary: string }> = {
+  'how-to-vllm-plugin': { summary: 'A practical guide to building vLLM plugins using the general_plugins entry point.' },
+  'flashhead': { summary: 'Reframes token prediction as a retrieval problem for faster LLM inference.' },
+  'cosmos-reason2-report': { summary: 'Benchmark report for optimizing Cosmos-Reason2 on Jetson Orin Nano.' },
+};
 
-export function Card({ card, isDraggingAnother }: CardProps) {
+export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAnother: boolean }) {
   const hoverTimeout = useRef<number | null>(null);
-  const { isDragging, hasMoved, handleMouseDown, currentPos } = useCardDrag(
-    card.id
-  );
+  const { isDragging, hasMoved, handleMouseDown, currentPos } = useCardDrag(card.id);
   const bringToFront = useCanvasStore((s) => s.bringToFront);
 
-  const handleMouseEnter = useCallback(() => {
-    hoverTimeout.current = window.setTimeout(() => {
-      bringToFront(card.id);
-    }, 150);
-  }, [card.id, bringToFront]);
+  const handleMouseEnter = () => {
+    hoverTimeout.current = window.setTimeout(() => bringToFront(card.id), 150);
+  };
 
-  const handleMouseLeave = useCallback(() => {
+  const handleMouseLeave = () => {
     if (hoverTimeout.current) {
       clearTimeout(hoverTimeout.current);
       hoverTimeout.current = null;
     }
-  }, []);
+  };
 
-  const handleClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (hasMoved) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    },
-    [hasMoved]
-  );
-
-  const handleReadMoreClick = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation();
+  const handleClick = (e: React.MouseEvent) => {
+    if (hasMoved) {
       e.preventDefault();
-      if (card.link && card.link !== '#') {
-        const openPreview = useCanvasStore.getState().openPreview;
-        openPreview(card);
-      }
-    },
-    [card]
-  );
+      e.stopPropagation();
+    }
+  };
+
+  const handleReadMoreClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    useCanvasStore.getState().openPreview(card);
+  };
+
+  const style = {
+    transform: `translate(${currentPos.x}px, ${currentPos.y}px)`,
+    zIndex: card.zIndex,
+  };
 
   if (card.cardType === 'github') {
     return (
       <div
-        className={`absolute w-64 bg-gradient-to-br from-dracula-bg to-dracula-bg-light rounded-lg cursor-pointer select-none
-          border border-dracula-purple/30
-          ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'}
-          hover:card-shadow-hover hover:scale-102`}
-        style={{
-          transform: `translate(${currentPos.x}px, ${currentPos.y}px)`,
-          zIndex: card.zIndex,
-        }}
+        className={`absolute w-64 rounded-xl cursor-pointer select-none bg-[#282A36]/90 border border-[#BD93F9]/30
+          ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102`}
+        style={style}
         onMouseDown={handleMouseDown}
-        onMouseEnter={!isDraggingAnother ? handleMouseEnter : undefined}
-        onMouseLeave={!isDraggingAnother ? handleMouseLeave : undefined}
+        onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
+        onMouseLeave={() => !isDraggingAnother && handleMouseLeave()}
         onClick={handleClick}
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <svg className="w-5 h-5 text-dracula-purple" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-            <span className="text-xs text-dracula-comment font-mono">
-              {card.description}
-            </span>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#BD93F9] to-[#FF79C6] flex items-center justify-center">
+              <GitHubIcon className="w-4 h-4 text-[#282A36]" />
+            </div>
+            <span className="text-xs text-[#6272A4] font-mono">{card.description}</span>
           </div>
-          <h3 className="font-semibold text-dracula-foreground text-sm leading-tight mb-3">
-            {card.title}
-          </h3>
-          <div className="pt-2 border-t border-dracula-bg-light/50">
-            <span
-              className="text-xs text-dracula-purple hover:text-dracula-pink transition-colors cursor-pointer font-medium"
-              onClick={handleReadMoreClick}
-            >
-              View README →
-            </span>
+          <h3 className="font-bold text-[#F8F8F2] text-sm leading-tight mb-2">{card.title}</h3>
+          <div className="pt-2 border-t border-[#343746]">
+            <button className="text-xs text-[#BD93F9] hover:text-[#FF79C6] transition-colors font-medium" onClick={handleReadMoreClick}>
+              Learn more →
+            </button>
           </div>
         </div>
       </div>
     );
   }
 
-  const badgeClass = card.type === 'demo'
-    ? 'bg-dracula-purple/20 text-dracula-purple border border-dracula-purple/40'
-    : 'bg-dracula-cyan/20 text-dracula-cyan border border-dracula-cyan/40';
+  const slug = card.link.split('/').pop() || '';
+  const content = articleContent[slug];
+  const isImageCard = slug === 'cosmos-reason2-report';
 
   return (
     <div
-      className={`absolute w-72 bg-dracula-bg rounded-lg p-4 cursor-pointer select-none
-        will-change-transform border border-dracula-bg-light
-        ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'}
-        hover:card-shadow-hover hover:scale-102`}
-      style={{
-        transform: `translate(${currentPos.x}px, ${currentPos.y}px)`,
-        zIndex: card.zIndex,
-      }}
+      className={`absolute w-72 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90 border border-[#8BE9FD]/20
+        ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102`}
+      style={style}
       onMouseDown={handleMouseDown}
-      onMouseEnter={!isDraggingAnother ? handleMouseEnter : undefined}
-      onMouseLeave={!isDraggingAnother ? handleMouseLeave : undefined}
+      onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
+      onMouseLeave={() => !isDraggingAnother && handleMouseLeave()}
       onClick={handleClick}
     >
-      <div className="flex items-start justify-between gap-2 mb-2">
-        <h3 className="font-semibold text-dracula-foreground text-sm leading-tight">
-          {card.title}
-        </h3>
-        <span
-          className={`shrink-0 px-2 py-0.5 text-xs rounded-full ${badgeClass}`}
-        >
-          {card.type === 'demo' ? 'Demo' : 'Article'}
-        </span>
-      </div>
-      <p className="text-xs text-dracula-foreground/70 leading-relaxed line-clamp-3">
-        {card.description}
-      </p>
-      <div className="mt-3 pt-2 border-t border-dracula-bg-light">
-        <span
-          className="text-xs text-dracula-cyan hover:text-dracula-green transition-colors cursor-pointer"
-          onClick={handleReadMoreClick}
-        >
-          Read more →
-        </span>
+      {isImageCard && (
+        <div className="relative h-28 overflow-hidden">
+          <img
+            src="https://huggingface.co/datasets/embedl/documentation-images/resolve/main/Edge-Inference-Benchmarks/Cosmos-Reason2-2B__orin_nano_super.svg"
+            alt=""
+            className="w-full h-full object-cover opacity-50"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#282A36]" />
+          <div className="absolute top-2 right-2">
+            <span className="px-2 py-0.5 text-xs rounded-full bg-[#8BE9FD]/20 text-[#8BE9FD] border border-[#8BE9FD]/30">Article</span>
+          </div>
+        </div>
+      )}
+
+      <div className="p-4">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="font-bold text-[#F8F8F2] text-sm leading-tight flex-1">{card.title}</h3>
+          {!isImageCard && (
+            <span className="shrink-0 px-2 py-0.5 text-xs rounded-full bg-[#8BE9FD]/20 text-[#8BE9FD] border border-[#8BE9FD]/30">Article</span>
+          )}
+        </div>
+
+        {content?.summary && !isImageCard && (
+          <p className="text-xs text-[#6272A4] line-clamp-2 mb-2">{content.summary}</p>
+        )}
+
+        <div className="pt-2 border-t border-[#343746]">
+          <button className="text-xs text-[#8BE9FD] hover:text-[#50FA7B] transition-colors font-medium" onClick={handleReadMoreClick}>
+            Read more →
+          </button>
+        </div>
       </div>
     </div>
   );
