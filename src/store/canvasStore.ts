@@ -10,6 +10,7 @@ interface CanvasStore {
   viewport: { offsetX: number; offsetY: number; scale: number };
   draggedCardId: string | null;
   maxZIndex: number;
+  previewCard: CardData | null;
   loadFromCookie: () => void;
   saveToCookie: () => void;
   clearCookie: () => void;
@@ -20,6 +21,8 @@ interface CanvasStore {
   pan: (deltaX: number, deltaY: number) => void;
   zoom: (delta: number, mouseX?: number, mouseY?: number) => void;
   reset: () => void;
+  openPreview: (card: CardData) => void;
+  closePreview: () => void;
 }
 
 const loadCardsFromCookie = (): CardData[] | null => {
@@ -39,6 +42,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   viewport: DEFAULT_VIEWPORT,
   draggedCardId: null,
   maxZIndex: 1,
+  previewCard: null,
 
   loadFromCookie: () => {
     const savedCards = loadCardsFromCookie();
@@ -130,7 +134,16 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       viewport: DEFAULT_VIEWPORT,
       maxZIndex: 1,
       draggedCardId: null,
+      previewCard: null,
     });
     get().clearCookie();
+  },
+
+  openPreview: (card: CardData) => {
+    set({ previewCard: card });
+  },
+
+  closePreview: () => {
+    set({ previewCard: null });
   },
 }));

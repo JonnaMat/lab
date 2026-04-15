@@ -3,6 +3,7 @@ import { useCanvasStore } from '../store/canvasStore';
 import { Card } from './Card';
 import { ResetButton } from './ResetButton';
 import { ViewportIndicators } from './ViewportIndicators';
+import { PreviewModal } from './PreviewModal';
 
 export function Canvas() {
   const canvasRef = useRef<HTMLDivElement>(null);
@@ -111,6 +112,7 @@ export function Canvas() {
 
       <ResetButton />
       <ViewportIndicators />
+      <PreviewModal />
     </div>
   );
 }
