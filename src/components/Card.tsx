@@ -2,7 +2,8 @@ import { useRef } from 'react';
 import { CardData } from '../data/initialCards';
 import { useCardDrag } from '../hooks/useCardDrag';
 import { useCanvasStore } from '../store/canvasStore';
-import { GitHubIcon, ArxivIcon } from './Icons';
+import { ArxivIcon, PaperIcon } from './Icons';
+import hfLogo from '../assets/hf-logo.svg';
 
 const articleContent: Record<string, { summary: string; authors?: string[] }> = {
   'how-to-vllm-plugin': { summary: 'A practical guide to building vLLM plugins using the general_plugins entry point.' },
@@ -80,6 +81,35 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     );
   }
 
+  if (card.cardType === 'paper') {
+    return (
+      <div
+        className={`absolute w-72 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90 border border-[#FFB86C]/30
+          ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102`}
+        style={style}
+        onMouseDown={handleMouseDown}
+        onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
+        onMouseLeave={() => !isDraggingAnother && handleMouseLeave()}
+        onClick={handleClick}
+      >
+        <div className="p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 flex items-center justify-center">
+              <PaperIcon className="w-8 h-8" />
+            </div>
+            <span className="text-xs text-[#FFB86C] font-mono">{card.description}</span>
+          </div>
+          <h3 className="font-bold text-[#F8F8F2] text-sm leading-tight mb-2">{card.title}</h3>
+          <div className="pt-2 border-t border-[#343746]">
+            <button className="text-xs text-[#FFB86C] hover:text-[#F1FA8C] transition-colors font-medium" onClick={handleReadMoreClick}>
+              View Paper →
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (card.cardType === 'github') {
     return (
       <div
@@ -93,8 +123,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#BD93F9] to-[#FF79C6] flex items-center justify-center">
-              <GitHubIcon className="w-4 h-4 text-[#282A36]" />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
+              <img src={hfLogo} alt="" className="w-6 h-6" />
             </div>
             <span className="text-xs text-[#6272A4] font-mono">{card.description}</span>
           </div>

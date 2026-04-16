@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../store/canvasStore';
 import { articleContent, githubContent, getSlug, getRepo } from '../data/content';
-import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon } from './Icons';
+import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon, PaperIcon } from './Icons';
+import hfLogo from '../assets/hf-logo.svg';
 
 interface GitHubStats {
   stars: number;
@@ -10,13 +11,22 @@ interface GitHubStats {
 }
 
 function AnimatedNumber({ value, suffix = '' }: { value: number; suffix?: string }) {
-  const [display, setDisplay] = useState(0);
+  const [display, setDisplay] = useState(value);
   const prevValue = useRef(value);
+  const hasAnimated = useRef(false);
 
   useEffect(() => {
+    if (value < 5 || hasAnimated.current) {
+      setDisplay(value);
+      prevValue.current = value;
+      if (value >= 5) hasAnimated.current = true;
+      return;
+    }
+    
+    hasAnimated.current = true;
     const start = prevValue.current;
     const end = value;
-    const duration = 800;
+    const duration = 1500;
     const startTime = performance.now();
 
     const animate = (currentTime: number) => {
@@ -49,6 +59,7 @@ export function PreviewModal() {
 
   const isGitHub = previewCard?.cardType === 'github';
   const isArxiv = previewCard?.cardType === 'arxiv';
+  const isPaper = previewCard?.cardType === 'paper';
   const isYoutube = previewCard?.cardType === 'youtube';
   const repo = previewCard?.link ? getRepo(previewCard.link) : null;
   const slug = previewCard?.link?.split('/').pop() || '';
@@ -100,36 +111,6 @@ export function PreviewModal() {
   }, [modelStats, firstModelName]);
 
   useEffect(() => {
-    if (!repo) return;
-    fetch(`https://api.github.com/repos/${repo.owner}/${repo.repo}`)
-      .then(r => r.json())
-      .then(data => setStats({ stars: data.stargazers_count || 0, forks: data.forks_count || 0, language: data.language || 'Python' }))
-      .catch(() => setStats(null));
-  }, [repo]);
-
-  useEffect(() => {
-    if (!mockDemo?.modelLinks) return;
-    const fetchModelStats = async () => {
-      for (const model of mockDemo.modelLinks!) {
-        try {
-          const res = await fetch(`https://huggingface.co/api/models/${model.name}`);
-          const data = await res.json();
-          setModelStats(prev => ({
-            ...prev,
-            [model.name]: { downloads: data.downloads || 0, likes: data.likes || 0, lastModified: data.lastModified || '' }
-          }));
-        } catch {
-          setModelStats(prev => ({
-            ...prev,
-            [model.name]: { downloads: model.downloads, likes: model.hearts, lastModified: '' }
-          }));
-        }
-      }
-    };
-    fetchModelStats();
-  }, [mockDemo?.modelLinks]);
-
-  useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => { if (e.key === 'Escape') closePreview(); };
     if (previewCard) {
       document.addEventListener('keydown', onKeyDown);
@@ -163,10 +144,10 @@ export function PreviewModal() {
             </div>
 
             {stats && (
-              <div className="flex gap-6 mb-6 pb-6 border-b border-white/10">
-                <div className="text-center"><div className="text-2xl font-bold text-white"><AnimatedNumber value={stats.stars} /></div><div className="text-xs text-gray-400 uppercase">Stars</div></div>
-                <div className="text-center"><div className="text-2xl font-bold text-white"><AnimatedNumber value={stats.forks} /></div><div className="text-xs text-gray-400 uppercase">Forks</div></div>
-                <div className="text-center"><div className="text-2xl font-bold text-white">{stats.language}</div><div className="text-xs text-gray-400 uppercase">Language</div></div>
+              <div className="flex gap-6 mb-6 pb-6 border-b border-[#6272A4]/30">
+                <div className="text-center"><div className="text-2xl font-bold text-[#F8F8F2]"><AnimatedNumber value={stats?.stars || 0} /></div><div className="text-xs text-[#6272A4] uppercase">Stars</div></div>
+                <div className="text-center"><div className="text-2xl font-bold text-[#F8F8F2]"><AnimatedNumber value={stats?.forks || 0} /></div><div className="text-xs text-[#6272A4] uppercase">Forks</div></div>
+                <div className="text-center"><div className="text-2xl font-bold text-[#F8F8F2]">{stats?.language || '-'}</div><div className="text-xs text-[#6272A4] uppercase">Language</div></div>
               </div>
             )}
 
@@ -185,29 +166,22 @@ export function PreviewModal() {
 
             {ghContent?.mockDemo && (
               <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="text-xs text-[#6272A4] uppercase tracking-wide">Slack Demo</div>
-                  <div className="flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                    <span className="text-xs text-green-500">Live</span>
-                  </div>
-                </div>
-                <div className="bg-[#0d1a1c] rounded-xl p-4 border border-[#1c9dae]">
+                <div className="bg-[#44475A] rounded-xl p-4 border border-[#6272A4]">
                   <div className="flex items-start gap-3 relative z-10">
-                    <img src={ghContent.mockDemo.avatar} alt="" className="w-10 h-10 rounded-full mt-1" />
+                    <img src={hfLogo} alt="" className="w-10 h-10 rounded-full mt-1" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-white font-medium text-sm">{ghContent.mockDemo.user}</span>
+                        <span className="text-[#F8F8F2] font-medium text-sm">{ghContent.mockDemo.user}</span>
                         {ghContent.mockDemo.userTag && (
-                          <span className="px-1.5 py-0.5 text-[10px] rounded bg-[#1c9dae]/30 text-[#1c9dae]">{ghContent.mockDemo.userTag}</span>
+                          <span className="px-1.5 py-0.5 text-[10px] rounded bg-[#BD93F9]/30 text-[#BD93F9]">{ghContent.mockDemo.userTag}</span>
                         )}
-                        <span className="text-white/40 text-xs">· {timeAgo}</span>
+                        <span className="text-[#6272A4] text-xs">· {timeAgo}</span>
                       </div>
                       {ghContent.mockDemo.title && (
-                        <div className="text-white font-medium text-sm mb-2">{ghContent.mockDemo.title}</div>
+                        <div className="text-[#F8F8F2] font-medium text-sm mb-2">{ghContent.mockDemo.title}</div>
                       )}
                       {ghContent.mockDemo.body && (
-                        <div className="text-white text-sm whitespace-pre-wrap leading-relaxed mb-2">{ghContent.mockDemo.body}</div>
+                        <div className="text-[#F8F8F2] text-sm whitespace-pre-wrap leading-relaxed mb-2">{ghContent.mockDemo.body}</div>
                       )}
                       {ghContent.mockDemo.modelLinks && (
                         <div className="space-y-1 mb-3">
@@ -219,15 +193,15 @@ export function PreviewModal() {
                                   href={`https://huggingface.co/${model.name}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-xs text-[#1c9dae] hover:underline font-mono"
+                                  className="text-xs text-[#BD93F9] hover:underline font-mono"
                                 >
                                   {model.name}
                                 </a>
-                                <span className="text-xs text-white/50">
+                                <span className="text-xs text-[#6272A4]">
                                   <AnimatedNumber value={stats?.downloads || model.downloads} /> downloads
                                 </span>
-                                <span className="text-white/30">·</span>
-                                <span className="text-xs text-white/50">
+                                <span className="text-[#6272A4]">·</span>
+                                <span className="text-xs text-[#6272A4]">
                                   <AnimatedNumber value={stats?.likes || model.hearts} /> ❤️
                                 </span>
                               </div>
@@ -236,7 +210,7 @@ export function PreviewModal() {
                         </div>
                       )}
                       {ghContent.mockDemo.codeBlock && (
-                        <div className="bg-[#0a0e10] rounded-lg p-3 mb-3 font-mono text-xs text-[#1c9dae] border border-[#1c9dae]/30 whitespace-pre-wrap">
+                        <div className="bg-[#0a0e10] rounded-lg p-3 mb-3 font-mono text-xs text-[#8BE9FD] border border-[#8BE9FD]/30 whitespace-pre-wrap">
                           {ghContent.mockDemo.codeBlock}
                         </div>
                       )}
@@ -250,7 +224,7 @@ export function PreviewModal() {
                                 key={i}
                                 onClick={() => setActiveReactions(prev => { const next = new Set(prev); isActive ? next.delete(reaction.emoji) : next.add(reaction.emoji); return next; })}
                                 className={`flex items-center gap-1 px-2 py-1 rounded-full text-sm border transition-all ${
-                                  isActive ? 'bg-[#1c9dae]/30 border-[#1c9dae] text-[#1c9dae]' : 'bg-transparent border-white/20 text-white/60 hover:border-white/40'
+                                  isActive ? 'bg-[#8BE9FD]/30 border-[#8BE9FD] text-[#8BE9FD]' : 'bg-transparent border-[#6272A4] text-[#6272A4] hover:border-[#F8F8F2]'
                                 }`}
                               >
                                 <span>{reaction.emoji}</span>
@@ -367,6 +341,42 @@ export function PreviewModal() {
     );
   }
 
+  if (isPaper) {
+    return (
+      <div ref={overlayRef} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
+        <div className="bg-[#282A36] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-[#FFB86C]/30 flex flex-col">
+          <div className="p-6 border-b border-[#343746]">
+            <div className="flex items-start justify-between gap-4 mb-4">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 flex items-center justify-center shrink-0">
+                  <PaperIcon className="w-14 h-14" />
+                </div>
+                <div>
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <span className="px-2 py-0.5 text-xs rounded-full bg-[#FFB86C]/20 text-[#FFB86C] border border-[#FFB86C]/30">Paper</span>
+                  </div>
+                  <h2 className="text-xl font-bold text-[#F8F8F2] leading-tight">{previewCard.title}</h2>
+                </div>
+              </div>
+              <button onClick={closePreview} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <div className="flex items-center gap-4 text-xs text-[#6272A4] mb-4">
+              <span className="font-mono text-[#FFB86C]">{previewCard.description}</span>
+            </div>
+            
+            <div className="flex gap-3">
+              <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#282A36] bg-gradient-to-r from-[#FFB86C] to-[#F1FA8C] rounded-lg hover:opacity-90 transition-opacity">
+                <ExternalLinkIcon className="w-4 h-4" /> View Paper
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div ref={overlayRef} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
       <div className="bg-[#282A36] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#8BE9FD]/30">
@@ -415,10 +425,4 @@ export function PreviewModal() {
       </div>
     </div>
   );
-}
-
-interface GitHubStats {
-  stars: number;
-  forks: number;
-  language: string;
 }

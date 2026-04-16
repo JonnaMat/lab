@@ -23,7 +23,12 @@ export const ExternalLinkIcon = ({ className = 'w-3.5 h-3.5' }: { className?: st
 );
 
 import arxivLogo from '../assets/arxiv-logomark-small.svg';
+import guSeal from '../assets/gu-seal.svg';
 
 export const ArxivIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
   <img src={arxivLogo} alt="arXiv" className={className} />
+);
+
+export const PaperIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
+  <img src={guSeal} alt="University of Gothenburg" className={className} />
 );

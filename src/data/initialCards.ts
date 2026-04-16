@@ -7,7 +7,7 @@ export interface CardData {
   description: string;
   type: 'article' | 'demo';
   link: string;
-  cardType?: 'article' | 'github' | 'arxiv' | 'space' | 'youtube';
+  cardType?: 'article' | 'github' | 'arxiv' | 'paper' | 'space' | 'youtube';
 }
 
 export interface Viewport {
@@ -34,6 +34,17 @@ export const DEFAULT_CARDS: CardData[] = [
     type: 'article',
     link: 'https://arxiv.org/abs/2603.14591',
     cardType: 'arxiv',
+  },
+  {
+    id: 'c19',
+    x: 1600,
+    y: 80,
+    zIndex: 1,
+    title: 'The Impact of Deep Neural Network Pruning on the Hyperparameter Performance Space',
+    description: "Master's thesis • Chalmers & University of Gothenburg, 2023",
+    type: 'article',
+    link: 'https://hdl.handle.net/2077/78958',
+    cardType: 'paper',
   },
   {
     id: 'c9',
@@ -107,6 +118,17 @@ export const DEFAULT_CARDS: CardData[] = [
     description: 'Video explanation of FlashHead architecture',
     type: 'demo',
     link: 'https://www.youtube.com/watch?v=8ZbgHLie4rI',
+    cardType: 'youtube',
+  },
+  {
+    id: 'c18',
+    x: 1100,
+    y: 650,
+    zIndex: 1,
+    title: 'Sensitivity Analysis of Hyperparameters in Deep Neural-Network Pruning',
+    description: 'tinyML EMEA 2023 • Understanding how pruning affects hyperparameter choices',
+    type: 'demo',
+    link: 'https://www.youtube.com/watch?v=-dn0UR7iUyc',
     cardType: 'youtube',
   },
   {
