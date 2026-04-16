@@ -2,8 +2,7 @@ import { useRef } from 'react';
 import { CardData } from '../data/initialCards';
 import { useCardDrag } from '../hooks/useCardDrag';
 import { useCanvasStore } from '../store/canvasStore';
-import { ArxivIcon, PaperIcon } from './Icons';
-import hfLogo from '../assets/hf-logo.svg';
+import { ArxivIcon, PaperIcon, GitHubLogoIcon } from './Icons';
 
 const articleContent: Record<string, { summary: string; authors?: string[] }> = {
   'how-to-vllm-plugin': { summary: 'A practical guide to building vLLM plugins using the general_plugins entry point.' },
@@ -123,8 +122,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center overflow-hidden">
-              <img src={hfLogo} alt="" className="w-6 h-6" />
+            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+              <GitHubLogoIcon className="w-6 h-6" />
             </div>
             <span className="text-xs text-[#6272A4] font-mono">{card.description}</span>
           </div>
