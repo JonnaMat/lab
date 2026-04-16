@@ -61,8 +61,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-              <ArxivIcon className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0">
+              <ArxivIcon className="w-6 h-6" />
             </div>
             <span className="text-xs text-[#FFB86C] font-mono">{card.description}</span>
           </div>
@@ -93,8 +93,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-              <PaperIcon className="w-5 h-5" />
+            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0">
+              <PaperIcon className="w-6 h-6" />
             </div>
             <span className="text-xs text-[#FFB86C] font-mono">{card.description}</span>
           </div>
@@ -122,7 +122,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0">
               <GitHubLogoIcon className="w-6 h-6" />
             </div>
             <span className="text-xs text-[#6272A4] font-mono">{card.description}</span>
