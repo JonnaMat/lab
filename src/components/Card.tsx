@@ -84,7 +84,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
   if (card.cardType === 'paper') {
     return (
       <div
-        className={`absolute w-72 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90 border border-[#FFB86C]/30
+        className={`absolute w-80 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90 border border-[#FFB86C]/30
           ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102`}
         style={style}
         onMouseDown={handleMouseDown}
