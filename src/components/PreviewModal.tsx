@@ -348,8 +348,8 @@ export function PreviewModal() {
           <div className="p-6 border-b border-[#343746]">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 flex items-center justify-center shrink-0">
-                  <PaperIcon className="w-14 h-14" />
+                <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center shrink-0">
+                  <PaperIcon className="w-9 h-9" />
                 </div>
                 <div>
                   <div className="flex flex-wrap gap-2 mb-2">

@@ -94,8 +94,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 flex items-center justify-center">
-              <PaperIcon className="w-8 h-8" />
+            <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+              <PaperIcon className="w-5 h-5" />
             </div>
             <span className="text-xs text-[#FFB86C] font-mono">{card.description}</span>
           </div>
