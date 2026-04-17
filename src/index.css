@@ -11,15 +11,32 @@
   --dracula-foreground: #F8F8F2;
   --dracula-foreground-rgb: 248, 248, 242;
   --dracula-comment: #6272A4;
-  --dracula-comment-rgb: 98, 114, 164;
-  --dracula-selection: #44475A;
-  --dracula-purple: #BD93F9;
-  --dracula-pink: #FF79C6;
   --dracula-cyan: #8BE9FD;
   --dracula-green: #50FA7B;
-  --dracula-yellow: #F1FA8C;
   --dracula-orange: #FFB86C;
+  --dracula-pink: #FF79C6;
+  --dracula-purple: #BD93F9;
   --dracula-red: #FF5555;
+  --dracula-yellow: #F1FA8C;
+  --dracula-selection: #44475A;
+}
+
+@layer utilities {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #21222C;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #44475A;
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #6272A4;
+  }
 }
 
 * {
@@ -79,7 +96,7 @@ body {
   }
 
   .modal-overlay {
-    @apply fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm;
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto backdrop-blur-sm;
     background: rgba(0, 0, 0, 0.7);
   }
 
@@ -100,15 +117,15 @@ body {
   }
 
   .modal-surface-blog {
-    @apply max-w-2xl border-dracula-cyan/30;
+    @apply max-w-2xl max-h-[85vh] border-dracula-cyan/30 overflow-y-auto;
   }
 
   .modal-surface-case-study {
-    @apply max-w-2xl border-dracula-orange/30;
+    @apply max-w-2xl max-h-[85vh] border-dracula-orange/30 overflow-y-auto;
   }
 
   .modal-surface-deep-dive {
-    @apply max-w-2xl border-dracula-purple/30;
+    @apply max-w-2xl max-h-[85vh] border-dracula-purple/30 overflow-y-auto;
   }
 
   .modal-header-divider {
@@ -221,6 +238,14 @@ body {
 
   .quote-panel-purple {
     @apply rounded-r-lg border-l-4 border-dracula-purple bg-dracula-purple/10 py-2 pl-4;
+  }
+
+  .engineering-panel {
+    @apply rounded-2xl border border-dracula-comment/20 bg-dracula-bg-dark/80 p-5;
+  }
+
+  .engineering-section-title {
+    @apply font-mono;
   }
 
   .code-panel {
@@ -409,6 +434,10 @@ body {
     font-weight: 600;
   }
 
+  .markdown-body h1:first-child {
+    display: none;
+  }
+
   .markdown-body h1 { font-size: 1.75rem; border-bottom: 1px solid var(--dracula-selection); padding-bottom: 0.3em; }
   .markdown-body h2 { font-size: 1.4rem; }
   .markdown-body h3 { font-size: 1.15rem; color: var(--dracula-cyan); }
@@ -452,22 +481,51 @@ body {
   }
 
   .markdown-body blockquote {
-    border-left: 3px solid var(--dracula-purple);
-    padding-left: 1em;
-    margin: 1em 0;
-    color: var(--dracula-comment);
+    border-left: 4px solid var(--dracula-purple);
+    background: rgba(189, 147, 249, 0.1);
+    padding: 1em 1.25em;
+    margin: 1.5em 0;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .markdown-body blockquote p {
+    color: var(--dracula-purple);
     font-style: italic;
+    font-size: 1.1em;
+    margin: 0;
   }
 
   .markdown-body ul,
   .markdown-body ol {
     padding-left: 1.5em;
-    margin-bottom: 1em;
-    color: rgba(var(--dracula-foreground-rgb), 0.8);
+    margin: 1em 0;
   }
 
   .markdown-body li {
-    margin-bottom: 0.3em;
+    margin-bottom: 0.5em;
+    line-height: 1.6;
+  }
+
+  .markdown-body li > ul,
+  .markdown-body li > ol {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+  }
+
+  .markdown-body ol {
+    list-style-type: decimal;
+  }
+
+  .markdown-body ul {
+    list-style-type: disc;
+  }
+
+  .markdown-body ul li::marker {
+    color: var(--dracula-orange);
+  }
+
+  .markdown-body ol li::marker {
+    color: var(--dracula-cyan);
   }
 
   .markdown-body table {

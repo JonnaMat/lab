@@ -11,6 +11,11 @@ export const articleContent: Record<string, {
   kind?: 'blog' | 'award' | 'case-study' | 'deep-dive';
   sourceLabel?: string;
   ctaLabel?: string;
+  engineering?: {
+    whatBroke: string[];
+    tradeoffs: string[];
+    insight: string;
+  };
 }> = {
   '2603.14591': {
     hook: 'FlashHead reframes token prediction as a retrieval problem, achieving up to 1.75× model-level inference speedup while maintaining accuracy.',
@@ -26,6 +31,19 @@ export const articleContent: Record<string, {
       'Selective quantization for effective low-bit computation',
       '1.75× speedup on Llama-3.2, Gemma-3, and Qwen-3',
     ],
+    engineering: {
+      whatBroke: [
+        'Initial k-means ran 6-7 hours on GPU (too many random initializations). Now runs in 10 minutes.',
+        'Unbalanced clusters caused variable latency—different prompts took different time depending on token distribution.',
+        'Heads typically cannot be quantized without severe accuracy loss—we discovered this was possible through the two-stage retrieval process.',
+      ],
+      tradeoffs: [
+        'Fixed 256 probes worked well in practice—dynamic probing didn\'t show significant benefit but could be prompt-specific.',
+        'Model-level speedup depends on head contribution to total latency—smaller models benefit more (head is larger proportion of total compute).',
+        'Balanced clusters trade some clustering quality for hardware efficiency and consistent latency.',
+      ],
+      insight: 'For small models, the head is a bottleneck because: (1) it cannot be quantized, (2) vocab size (~128k) is often larger than hidden state (~4k), making it a large matmul. Token prediction is retrieval, not classification—we\'re finding the most probable token from a corpus, not classifying into 128k classes.',
+    },
   },
   'how-to-vllm-plugin': {
     hook: 'A practical guide to building vLLM plugins using the general_plugins entry point. Covers architecture registration, monkey-patching internals, and real-world examples from FlashHead.',
@@ -47,33 +65,6 @@ export const articleContent: Record<string, {
       'Works with vLLM out of the box',
     ],
   },
-  'cosmos-reason2-report': {
-    hook: 'Benchmark report for optimizing Cosmos-Reason2 (Qwen3-VL) on Jetson Orin Nano. From OOM to running with near-zero accuracy loss.',
-    image: 'https://huggingface.co/datasets/embedl/documentation-images/resolve/main/Edge-Inference-Benchmarks/Cosmos-Reason2-2B__orin_nano_super.svg',
-    imageAlt: 'Benchmark visualization for Cosmos-Reason2 on Jetson Orin Nano',
-    tags: ['Edge AI', 'Quantization', 'Jetson'],
-    keyPoints: [
-      'Mixed-precision quantization',
-      '4-bit weight, 8-bit activation',
-      'Sub-1W inference on edge',
-    ],
-  },
-  '4347835': {
-    kind: 'award',
-    hook: 'Grand Prize for Engineering - Rising Star, issued by Ny Teknik in November 2024.',
-    quote: 'As a role model for women in one of the most male-dominated areas of the tech industry, she shows how expertise, commitment and leadership can pave the way for new opportunities and inspire future generations. With her deep knowledge of computer science and mathematics, combined with her leadership and ability to think strategically, she has a key role in driving the development of the AI industry forward.',
-    tags: ['Award', 'AI Industry', 'Leadership'],
-    image: 'https://image.nyteknik.se/4347838.webp?imageId=4347838&x=0.00&y=7.18&cropw=100.00&croph=85.63&width=2116&height=1208&format=webp',
-    imageAlt: 'Portrait from Ny Teknik article about the Rising Star engineering award',
-    published: 'Issued in Nov 2024',
-    sourceLabel: 'Ny Teknik',
-    ctaLabel: 'Read article',
-    keyPoints: [
-      'Recognized for technical depth in computer science and mathematics',
-      'Highlighted as a role model for women in AI and engineering',
-      'Cited for leadership, strategic thinking, and industry impact',
-    ],
-  },
   'optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin': {
     kind: 'case-study',
     hook: 'Embedl optimized a Vision Transformer for NVIDIA Jetson AGX Orin using TensorRT, mixed-precision quantization, and structured pruning.',
@@ -90,22 +81,22 @@ export const articleContent: Record<string, {
     ],
     quote: 'We achieved a 2x speedup and over 2x less energy per inference with less than 1% accuracy drop.',
   },
-  'how-to-prune-attention': {
-    kind: 'deep-dive',
-    hook: 'Attention pruning is about removing structured capacity from the attention block without collapsing the tensor layout that hardware and compilers expect. The main levers are heads, channels per head, and the shared embedding width.',
-    tags: ['Attention', 'Pruning', 'Vision Transformers', 'Research'],
-    image: 'https://www.embedl.com/hubfs/Vision%20Transformers-min.png',
-    imageAlt: 'Attention pruning deep dive for Vision Transformers',
-    sourceLabel: 'Research Deep Dive',
+  '4347835': {
+    kind: 'award',
+    hook: 'Grand Prize for Engineering - Rising Star, issued by Ny Teknik in November 2024.',
+    quote: 'As a role model for women in one of the most male-dominated areas of the tech industry, she shows how expertise, commitment and leadership can pave the way for new opportunities and inspire future generations. With her deep knowledge of computer science and mathematics, combined with her leadership and ability to think strategically, she has a key role in driving the development of the AI industry forward.',
+    tags: ['Award', 'AI Industry', 'Leadership'],
+    image: 'https://image.nyteknik.se/4347838.webp?imageId=4347838&x=0.00&y=7.18&cropw=100.00&croph=85.63&width=2116&height=1208&format=webp',
+    imageAlt: 'Portrait from Ny Teknik article about the Rising Star engineering award',
+    published: 'Issued in Nov 2024',
+    sourceLabel: 'Ny Teknik',
+    ctaLabel: 'Read article',
     keyPoints: [
-      'Head pruning removes entire attention branches and is the cleanest structured change',
-      'Channel pruning keeps all heads but reduces width in the query, key, and value projections',
-      'Embedding-width pruning shrinks the shared representation that all heads draw from',
-      'Structured pruning is easier to accelerate than unstructured sparsity on real hardware',
-      'Each pruning axis has different accuracy and deployment tradeoffs',
+      'Recognized for technical depth in computer science and mathematics',
+      'Highlighted as a role model for women in AI and engineering',
+      'Cited for leadership, strategic thinking, and industry impact',
     ],
-    quote: 'Good attention pruning removes structure the model is not using while preserving structure the compiler can still optimize.',
-  },
+},
 };
 
 export const githubContent: Record<string, {

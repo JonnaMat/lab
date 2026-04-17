@@ -6,13 +6,14 @@ import { useCanvasStore } from '../store/canvasStore';
 import { ArxivIcon, AwardIcon, PaperIcon, GitHubLogoIcon } from './Icons';
 
 const articleSummaries: Record<string, { summary: string; authors?: string[] }> = {
-  'how-to-vllm-plugin': { summary: 'A practical guide to building vLLM plugins using the general_plugins entry point.' },
-  'flashhead': { summary: 'Reframes token prediction as a retrieval problem for faster LLM inference.' },
-  'cosmos-reason2-report': { summary: 'Benchmark report for optimizing Cosmos-Reason2 on Jetson Orin Nano.' },
-  'optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin': { summary: 'Vision Transformer optimization on NVIDIA Jetson AGX Orin with 4x speedup and more than 2x lower energy per inference.' },
-  'how-to-prune-attention': { summary: 'Research explainer on the three main structured ways to prune attention: heads, channels per head, and embedding width.' },
-  '2603.14591': { summary: 'Training-free drop-in replacement for dense classification head. Up to 1.75× inference speedup.' },
-  '4347835': { summary: 'Ny Teknik Rising Star award recognizing technical depth, leadership, and AI industry impact.' },
+  'how-to-vllm-plugin': { summary: 'How we built a vLLM plugin without touching the source code.' },
+  'flashhead': { summary: 'Retrieval instead of classification for the LM head. 4.85× speedup, no retraining.' },
+  'cosmos-reason2-report': { summary: 'Took a VLM from OOM to running on Jetson Orin Nano. 4-bit quantization, sub-1W.' },
+  'optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin': { summary: 'Pruning and quantizing ViT for Orin. 2× speedup, <1% accuracy drop.' },
+  'how-to-prune-attention': { summary: 'Head pruning, channel pruning, embedding pruning. Which one actually works on hardware.' },
+  '2603.14591': { summary: 'Replacing the dense classification head with retrieval. 1.75× model-level speedup.' },
+  '4347835': { summary: 'Ny Teknik Rising Star award for engineering.' },
+  'flashhead-deep-dive': { summary: 'K-means took 6 hours. Balanced clusters were an accident. Why heads are the bottleneck.' },
 };
 
 const smallCardLogoBadgeClass = 'w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 p-0';
@@ -322,6 +323,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
   if (card.cardType === 'deep-dive') {
     const slug = card.link.split('/').pop() || '';
     const content = articleMeta[slug];
+    const summary = articleSummaries[slug]?.summary || content?.hook || '';
     return (
       <div
         data-card-id={card.id}
@@ -352,11 +354,11 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
             {!content?.image && <span className="badge badge-purple shrink-0">Deep Dive</span>}
           </div>
 
-          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">{articleSummaries['how-to-prune-attention'].summary}</p>
+          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">{summary}</p>
 
           <div className={cardDividerClass}>
             <button className="action-link action-link-purple" onClick={handleReadMoreClick}>
-              Explore pruning →
+              {slug === 'how-to-prune-attention' ? 'pruning deep dive' : slug === 'flashhead-deep-dive' ? 'flashhead notes' : 'read'}
             </button>
           </div>
         </div>

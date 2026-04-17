@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../store/canvasStore';
 import { articleContent, githubContent, paperContent, getSlug, getRepo } from '../data/content';
+import { loadCard, parseMarkdown } from '../data/cards/loader';
 import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon, AwardIcon, PaperIcon } from './Icons';
 import hfLogo from '../assets/hf-logo.svg';
 
@@ -225,14 +226,29 @@ export function PreviewModal() {
   const isAward = previewCard?.cardType === 'award';
   const isPaper = previewCard?.cardType === 'paper';
   const isYoutube = previewCard?.cardType === 'youtube';
-  const repo = previewCard?.link ? getRepo(previewCard.link) : null;
+const repo = previewCard?.link ? getRepo(previewCard.link) : null;
   const slug = previewCard?.link?.split('/').pop() || '';
   const ghSlug = previewCard?.link ? getSlug(previewCard.link) : '';
-  const content = articleContent[slug];
+  
+  const markdownSlugs = ['flashhead-deep-dive', 'how-to-prune-attention', 'cosmos-reason2-report'];
+  const [markdownContent, setMarkdownContent] = useState<ReturnType<typeof loadCard> | null>(null);
+  const isDeepDive = previewCard?.cardType === 'deep-dive';
+  const hasMarkdownContent = markdownSlugs.includes(slug);
+
+  const content = hasMarkdownContent ? (markdownContent?.frontmatter as typeof articleContent[string] | undefined) : articleContent[slug];
   const isCaseStudy = previewCard?.cardType === 'case-study' || content?.kind === 'case-study';
-  const isDeepDive = previewCard?.cardType === 'deep-dive' || content?.kind === 'deep-dive';
-  const paperDetails = paperContent[slug];
-  const ghContent = githubContent[ghSlug];
+
+  useEffect(() => {
+    if (!hasMarkdownContent) {
+      setMarkdownContent(null);
+      return;
+    }
+    const card = loadCard(slug);
+    setMarkdownContent(card);
+  }, [slug, hasMarkdownContent]);
+
+  const paperDetails = hasMarkdownContent ? null : paperContent[slug];
+  const ghContent = hasMarkdownContent ? null : githubContent[ghSlug];
   const mockDemo = ghContent?.mockDemo;
   const firstModelName = mockDemo?.modelLinks?.[0]?.name;
 
@@ -661,7 +677,40 @@ export function PreviewModal() {
             </blockquote>
           )}
 
-          {isDeepDive && <TransformerPruningExplorer />}
+          {markdownContent && (
+            <div 
+              className="prose prose-invert prose-sm max-w-none mb-6 markdown-body"
+              dangerouslySetInnerHTML={{ __html: parseMarkdown(markdownContent.body) }}
+            />
+          )}
+
+          {isDeepDive && slug === 'how-to-prune-attention' && <TransformerPruningExplorer />}
+
+          {content?.engineering && (
+            <div className="engineering-panel mb-6">
+              <h4 className="text-sm font-semibold uppercase tracking-wider text-dracula-purple mb-4">Engineering Notes</h4>
+              
+              {content.engineering.whatBroke.length > 0 && (
+                <div className="mb-4">
+                  {content.engineering.whatBroke.map((item, i) => (
+                    <p key={i} className="text-sm surface-subtle mb-2 leading-relaxed">{item}</p>
+                  ))}
+                </div>
+              )}
+              
+              {content.engineering.tradeoffs.length > 0 && (
+                <div className="mb-4">
+                  {content.engineering.tradeoffs.map((item, i) => (
+                    <p key={i} className="text-sm surface-subtle mb-2 leading-relaxed">{item}</p>
+                  ))}
+                </div>
+              )}
+              
+              {content.engineering.insight && (
+                <p className="text-sm surface-subtle leading-relaxed italic border-l-2 border-dracula-green pl-3">{content.engineering.insight}</p>
+              )}
+            </div>
+          )}
 
           {content?.keyPoints && (
             <ul className="space-y-2 mb-6">

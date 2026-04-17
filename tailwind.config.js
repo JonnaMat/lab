@@ -34,7 +34,24 @@ export default {
       scale: {
         '102': '1.02',
       },
+      typography: (theme) => ({
+        invert: {
+          css: {
+            '--tw-prose-body': '#F8F8F2',
+            '--tw-prose-headings': '#BD93F9',
+            '--tw-prose-links': '#8BE9FD',
+            '--tw-prose-bold': '#F8F8F2',
+            '--tw-prose-code': '#FF79C6',
+            '--tw-prose-quotes': '#6272A4',
+            '--tw-prose-quote-borders': '#BD93F9',
+            '--tw-prose-lists': '#6272A4',
+            '--tw-prose-bullets': '#FFB86C',
+          },
+        },
+      }),
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 };

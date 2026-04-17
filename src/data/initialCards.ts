@@ -36,6 +36,17 @@ export const DEFAULT_CARDS: CardData[] = [
     type: 'article',
     link: 'https://huggingface.co/blog/JonnaMat/flashhead',
   },
+  {
+    id: 'flashhead-dd',
+    x: 1300,
+    y: 350,
+    zIndex: 1,
+    title: 'FlashHead: Research Notes',
+    description: 'Why the head is a bottleneck, what broke during development, and the trade-offs we hit.',
+    type: 'article',
+    link: 'flashhead-deep-dive',
+    cardType: 'deep-dive',
+  },
 {
     id: 'c12',
     x: 1500,
@@ -123,7 +134,7 @@ export const DEFAULT_CARDS: CardData[] = [
     title: 'Cosmos-Reason2: On-Device Inference Report',
     description: 'Benchmark report for optimizing Cosmos-Reason2 on Jetson Orin Nano. From OOM to running with near-zero accuracy loss using mixed-precision quantization.',
     type: 'article',
-    link: 'https://huggingface.co/blog/JonnaMat/cosmos-reason2-report',
+    link: 'cosmos-reason2-report',
   },
   {
     id: 'c21',
@@ -144,7 +155,7 @@ export const DEFAULT_CARDS: CardData[] = [
     title: 'How to Prune Attention',
     description: 'Research explainer on pruning attention heads, channels per head, and embedding width.',
     type: 'article',
-    link: 'https://research.explainer/how-to-prune-attention',
+    link: 'how-to-prune-attention',
     cardType: 'deep-dive',
   },
 {
