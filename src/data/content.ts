@@ -104,6 +104,24 @@ export const articleContent: Record<
       quote:
         "We achieved a 2x speedup and over 2x less energy per inference with less than 1% accuracy drop.",
     },
+  "semantic-segmentation-in-real-time-on-tis-tda4vm": {
+    kind: "case-study",
+    hook: "Adapting LRASPP for TIDL and applying latency-aware pruning for a 3× speedup on TI's TDA4VM.",
+    tags: ["Semantic Segmentation", "TDA4VM", "Edge AI"],
+    sourceLabel: "Embedl",
+    ctaLabel: "Open case study",
+    image:
+      "https://www.embedl.com/hubfs/Image%20classification%20(300%20x%20175%20px)%20(8)-min.png",
+    imageAlt: "Semantic Segmentation on TI's TDA4VM",
+    keyPoints: [
+      "MobileNetV3 to MobileNetV2 backbone replacement for TIDL compatibility",
+      "Latency-aware pruning achieving 3× speedup",
+      "0.9% mIoU drop (52.4% vs 53.3%)",
+      "Real-time inference at 15.5ms on TI TDA4VM",
+    ],
+    quote:
+      "The pruned model achieved a notable reduction in latency—15.5 ms compared to the 46.76 ms of the baseline, which is a 3× speedup.",
+  },
   "4347835": {
     kind: "award",
     hook: "Grand Prize for Engineering - Rising Star, issued by Ny Teknik in November 2024.",

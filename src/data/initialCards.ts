@@ -131,8 +131,8 @@ export const DEFAULT_CARDS: CardData[] = [
   // Case Studies
   {
     id: "c15",
-    x: 1327,
-    y: 164,
+    x: 1459,
+    y: -292,
     zIndex: 1,
     title: "Talk @ EdgeAI Foundation 2025",
     description: "The Optimization Trap in EdgeAI",
@@ -142,8 +142,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c11",
-    x: 1106,
-    y: -504,
+    x: 1364,
+    y: 360,
     zIndex: 1,
     title: "Cosmos-Reason2: On-Device Inference Report",
     description:
@@ -153,8 +153,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c21",
-    x: 1523,
-    y: -47,
+    x: 1585,
+    y: -68,
     zIndex: 1,
     title:
       "Optimizing Vision Transformers for Peak Performance on NVIDIA Jetson AGX Orin",
@@ -165,9 +165,21 @@ export const DEFAULT_CARDS: CardData[] = [
     cardType: "case-study",
   },
   {
+    id: "c23",
+    x: 1823,
+    y: -186,
+    zIndex: 1,
+    title: "Semantic Segmentation in Real-Time on TI's TDA4VM",
+    description:
+      "Adapting LRASPP for TIDL and applying latency-aware pruning for a 3× speedup on TDA4VM.",
+    type: "article",
+    link: "https://www.embedl.com/semantic-segmentation-in-real-time-on-tis-tda4vm",
+    cardType: "case-study",
+  },
+  {
     id: "c22",
-    x: 1607,
-    y: 323,
+    x: 1315,
+    y: -87,
     zIndex: 1,
     title: "How to Prune Attention",
     description:
@@ -178,8 +190,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c16",
-    x: 1818,
-    y: 139,
+    x: 1972,
+    y: 41,
     zIndex: 1,
     title: "Talk @ GAIA 2025",
     description:
@@ -191,8 +203,8 @@ export const DEFAULT_CARDS: CardData[] = [
   // Research
   {
     id: "c14",
-    x: 1234,
-    y: -334,
+    x: 1058,
+    y: 518,
     zIndex: 1,
     title: "Edge Inference Benchmarks",
     description: "Edge Inference Benchmarks for Qwen3.5 on NVIDIA AGX Orin",

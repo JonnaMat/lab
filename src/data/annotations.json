@@ -1,7 +1,17 @@
 [
   {
     "cardId": "flashhead-dd",
-    "coordinate": { "x": 1000, "y": 140 },
-    "text": "Start here"
+    "coordinate": { "x": 1000, "y": 240 },
+    "text": "FlashHead"
+  },
+  {
+    "cardId": "c22",
+    "coordinate": { "x": 1300, "y": 200 },
+    "text": "Pruning Transformers"
+  },
+  {
+    "cardId": "c9",
+    "coordinate": { "x": 1400, "y": 800 },
+    "text": "vLLM Plugin"
   }
 ]
