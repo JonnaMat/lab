@@ -36,31 +36,6 @@ This spatial canvas presents my research and projects on **LLM optimization** an
 - vLLM Plugin Development
 
 
-## Key Projects
-
-| Project | Description |
-|---------|-------------|
-| **FlashHead** | Drop-in replacement for the LM classification head. Up to 4.85× speedup without retraining. [Blog](https://huggingface.co/blog/JonnaMat/flashhead) · [Paper](https://arxiv.org/abs/2603.14591) · [Code](https://github.com/embedl/flash-head) |
-| **Edge Inference Benchmarks** | Benchmarking Qwen3.5 on NVIDIA AGX Orin. [HuggingFace Space](https://huggingface.co/spaces/embedl/Edge-Inference-Benchmarks) |
-| **Master's Thesis** | The Impact of Deep Neural Network Pruning on the Hyperparameter Performance Space. [Chalmers](https://hdl.handle.net/2077/78958) |
-
-## Blog Posts & Case Studies
-
-- [How to Build a vLLM Plugin](https://huggingface.co/blog/JonnaMat/how-to-vllm-plugin)
-- [Cosmos-Reason2: On-Device Inference Report](https://huggingface.co/blog/JonnaMat/cosmos-reason2-report)
-- [Optimizing Vision Transformers on NVIDIA Jetson AGX Orin](https://www.embedl.com/optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin)
-- [How to Prune Attention](https://research.explainer/how-to-prune-attention)
-
-## GitHub Projects
-
-- [embedl/flash-head](https://github.com/embedl/flash-head) — vLLM plugin for FlashHead
-- [JonnaMat/huggingface-slack-app](https://github.com/JonnaMat/huggingface-slack-app) — GitHub Slack bot for HF notifications
-
-## Recognition
-
-- **Grand Prize for Engineering - Rising Star** — Ny Teknik (Nov 2024)
-
-
 ## Tech Stack
 
 | Technology                                    | Purpose                      |

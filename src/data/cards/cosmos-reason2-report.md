@@ -12,7 +12,7 @@ keyPoints:
   - "Mixed-precision quantization: 4-bit weight, 8-bit activation"
   - "Sub-1W inference on edge"
   - "From OOM to running on Jetson Orin Nano"
-related: ["flashhead-deep-dive"]
+related: ["flashhead-deep-dive", "Edge-Inference-Benchmarks"]
 ---
 
 # Cosmos-Reasson2: On-Device Inference Report

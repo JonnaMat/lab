@@ -10,7 +10,7 @@ keyPoints:
   - "Balanced clusters give consistent latency regardless of prompt, at the cost of some clustering quality"
   - "Selective quantization on the first matmul was an accidental discovery from a whiteboard discussion"
   - "Fixed 256 probes perform well—we tried dynamic but didn't see significant improvement"
-related: ["how-to-prune-attention", "cosmos-reason2-report"]
+related: ["https://github.com/embedl/flash-head", "2603.14591", "cosmos-reason2-report"]
 ---
 
 # FlashHead: Research Notes
@@ -23,7 +23,7 @@ Two main reasons:
 The matrix multiplication is just huge
 
 1. **Can't be quantized** - Unlike the rest of the model, the head typically stays in FP16/FP32 because quantization destroys accuracy
-2. **Huge matrix multiply** - Hidden dimension (~4k - Llama3.2 3B has 3072, Qwen3 1.7B has 2048, Qwen3.5 9B has 2048, Gemma3 270M has 640 - it scales with model size), multiplying that with a vocabulary of 128k (sometimes 256k, sometimes even more). There are edge cases with vocab sizes in the millions, but even 128k is already large enough to dominate compute.
+2. **Huge matrix multiply** - Hidden dimension (~2k - Llama3.2 3B has 3072, Qwen3 1.7B has 2048, Qwen3.5 9B has 2048, Gemma3 270M has 640 - it scales with model size), multiplying that with a vocabulary of 128k (sometimes 256k, sometimes even more). There are edge cases with vocab sizes in the millions, but even 128k is already large enough to dominate compute.
 
 ## Reframing: token prediction as retrieval 
 

@@ -65,7 +65,7 @@ export const articleContent: Record<
     hook: "A practical guide to building vLLM plugins using the general_plugins entry point. Covers architecture registration, monkey-patching internals, and real-world examples from FlashHead.",
     quote: '"Just pip install and run" was a distant dream.',
     tags: ["vLLM", "Python", "Plugin System"],
-    related: ["flashhead-deep-dive", "https://github.com/embedl/flash-head"],
+    related: ["https://github.com/embedl/flash-head"],
     keyPoints: [
       "Architecture registration via vllm.general_plugins",
       "Monkey-patching without source changes",
@@ -77,7 +77,7 @@ export const articleContent: Record<
     quote:
       "Generating the next token is not a dense matrix multiplication problem; it is a retrieval problem.",
     tags: ["LLM Optimization", "Inference", "Edge AI"],
-    related: ["2603.14591", "flashhead-deep-dive", "how-to-vllm-plugin"],
+    related: ["2603.14591", "flashhead-deep-dive"],
     keyPoints: [
       "Two-stage retrieval pipeline",
       "Training-free deployment",
@@ -94,7 +94,7 @@ export const articleContent: Record<
       image:
         "https://lh7-rt.googleusercontent.com/docsz/AD_4nXefT0lqOJqdusTxqfRSlDa05RPo6T3E_K9CiQtDzyv3Ue-PB3e70lCyhnxYQ0g4PdWYky6-Cd7li-EoiWEWQ0FnAHmheMXn9FAJ00cp21N46YpQZy_8-UCb_gN8YbUkqreJHTJ85GYG6R9tfUIePkM4RZpL?key=xvrY1hwx2wvGoJELuh9zZw",
       imageAlt: "Vision Transformer on NVIDIA Jetson AGX Orin",
-      related: ["cosmos-reason2-report", "how-to-prune-attention"],
+      related: ["how-to-prune-attention", "-dn0UR7iUyc"],
       keyPoints: [
         "2x end-to-end inference speedup on NVIDIA Jetson AGX Orin",
         "Low-bit integer quantization with critical structures kept in floating point",
@@ -117,7 +117,6 @@ export const articleContent: Record<
     published: "Issued in Nov 2024",
     sourceLabel: "Ny Teknik",
     ctaLabel: "Read article",
-    related: ["2603.14591", "flashhead-deep-dive"],
   },
 };
 
@@ -161,7 +160,7 @@ export const githubContent: Record<
       "Quantized model support out of the box",
     ],
     installCommand: "pip install flash-head",
-    related: ["flashhead-deep-dive", "how-to-vllm-plugin"],
+    related: ["2603.14591", "flashhead-deep-dive", "how-to-vllm-plugin"],
   },
   "JonnaMat-huggingface-slack-app": {
     description:
@@ -217,7 +216,7 @@ export const paperContent: Record<
       "In this work, we perform a series of experiments on popular classification models, ResNet-56, MobileNetV2, and ResNet-50, using CIFAR-10 and ImageNet datasets. We examine the effect of uniform and non-uniform structured magnitude pruning on the learning rate and weight decay. Specifically, we explore how pruning affects their relationship and the risk associated with not tuning these hyperparameters after pruning. The experiments reveal that pruning does not have a significant impact on the learning rate and weight decay, suggesting that extensive hyperparameter tuning after pruning may not be crucial for optimal performance.",
       "Overall, this study provides insights into the complex dynamics between pruning, model performance, and optimal hyperparameters. The findings give guidance for optimising and fine-tuning pruned models and contribute to advancing model compression and hyperparameter tuning, highlighting the interplay between model architecture and hyperparameters.",
     ],
-    related: ["how-to-prune-attention"],
+    related: ["how-to-prune-attention", "-dn0UR7iUyc"],
   },
 };
 
