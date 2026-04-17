@@ -62,6 +62,7 @@ export function useCardDrag(cardId: string) {
         if (hasMoved.current) {
           updateCardPosition(cardId, visualPos.x, visualPos.y);
           finalizeDrag(cardId);
+          console.log(`Card ${cardId} moved to: x=${visualPos.x}, y=${visualPos.y}`);
         }
         setIsDragging(false);
         setDragging(null);

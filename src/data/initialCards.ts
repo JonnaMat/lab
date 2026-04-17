@@ -34,11 +34,10 @@ export interface CanvasState {
 
 export const DEFAULT_CARDS: CardData[] = [
   // FlashHead
-
   {
     id: "c10",
-    x: 1400,
-    y: 200,
+    x: 79,
+    y: 403,
     zIndex: 1,
     title: "FlashHead: Accelerating Language Model Inference",
     description:
@@ -48,8 +47,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "flashhead-dd",
-    x: 1300,
-    y: 350,
+    x: 394,
+    y: 346,
     zIndex: 1,
     title: "FlashHead: Research Notes",
     description:
@@ -60,8 +59,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c12",
-    x: 1500,
-    y: 20,
+    x: 420,
+    y: 129,
     zIndex: 1,
     title: "flash-head",
     description: "vLLM plugin • embedl/flash-head",
@@ -71,8 +70,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c13",
-    x: 1200,
-    y: 80,
+    x: 191,
+    y: 218,
     zIndex: 1,
     title:
       "FlashHead: Efficient Drop-In Replacement for the Classification Head",
@@ -84,8 +83,8 @@ export const DEFAULT_CARDS: CardData[] = [
   // Master Thesis
   {
     id: "c19",
-    x: 600,
-    y: 880,
+    x: 1026,
+    y: 1040,
     zIndex: 1,
     title:
       "The Impact of Deep Neural Network Pruning on the Hyperparameter Performance Space",
@@ -96,8 +95,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c18",
-    x: 850,
-    y: 950,
+    x: 1232,
+    y: 1148,
     zIndex: 1,
     title: "Talk @ tinyML EMEA 2023",
     description:
@@ -109,8 +108,8 @@ export const DEFAULT_CARDS: CardData[] = [
   // Engineering
   {
     id: "c9",
-    x: 1800,
-    y: 500,
+    x: 1656,
+    y: 778,
     zIndex: 1,
     title: "How to Build a vLLM Plugin",
     description:
@@ -120,8 +119,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c17",
-    x: 1950,
-    y: 600,
+    x: 1833,
+    y: 886,
     zIndex: 1,
     title: "huggingface-slack-app",
     description: "GitHub bots for Slack and HF integration",
@@ -132,8 +131,8 @@ export const DEFAULT_CARDS: CardData[] = [
   // Case Studies
   {
     id: "c15",
-    x: 25,
-    y: 80,
+    x: 1327,
+    y: 164,
     zIndex: 1,
     title: "Talk @ EdgeAI Foundation 2025",
     description: "The Optimization Trap in EdgeAI",
@@ -143,8 +142,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c11",
-    x: 300,
-    y: 150,
+    x: 1106,
+    y: -504,
     zIndex: 1,
     title: "Cosmos-Reason2: On-Device Inference Report",
     description:
@@ -154,8 +153,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c21",
-    x: 540,
-    y: 260,
+    x: 1523,
+    y: -47,
     zIndex: 1,
     title:
       "Optimizing Vision Transformers for Peak Performance on NVIDIA Jetson AGX Orin",
@@ -167,8 +166,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c22",
-    x: 780,
-    y: 230,
+    x: 1607,
+    y: 323,
     zIndex: 1,
     title: "How to Prune Attention",
     description:
@@ -179,8 +178,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c16",
-    x: 200,
-    y: 350,
+    x: 1818,
+    y: 139,
     zIndex: 1,
     title: "Talk @ GAIA 2025",
     description:
@@ -192,8 +191,8 @@ export const DEFAULT_CARDS: CardData[] = [
   // Research
   {
     id: "c14",
-    x: 1000,
-    y: 600,
+    x: 1234,
+    y: -334,
     zIndex: 1,
     title: "Edge Inference Benchmarks",
     description: "Edge Inference Benchmarks for Qwen3.5 on NVIDIA AGX Orin",
@@ -203,7 +202,7 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c20",
-    x: 1720,
+    x: 100,
     y: 860,
     zIndex: 1,
     title: "Grand Prize for Engineering - Rising Star",

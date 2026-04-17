@@ -2,7 +2,7 @@
   <h1 style="font-size: 28px; margin: 10px 0;">Jonna Matthiesen</h1>
   <p>Research portfolio showcasing work on LLM inference optimization, edge AI, and model compression.</p>
   <p>
-    <a href="https://jonnamat.github.io/spatial-canvas/">
+    <a href="https://jonnamat.github.io/lab/">
       <img alt="Live Demo" src="https://img.shields.io/badge/Live%20Demo-View%20Site-green?style=for-the-badge" />
     </a>
   </p>
