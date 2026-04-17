@@ -1,9 +1,24 @@
 import Cookies from 'js-cookie';
 import { create } from 'zustand';
 import { CardData, DEFAULT_CARDS, DEFAULT_VIEWPORT, MAX_Z_INDEX } from '../data/initialCards';
+import rawAnnotations from '../data/annotations.json';
 
 const COOKIE_KEY = 'spatial-canvas-layout';
 const COOKIE_EXPIRY = 30;
+
+export interface ArrowAnnotation {
+  cardId: string;
+  coordinate: { x: number; y: number };
+  text: string;
+  color?: string;
+}
+
+interface RawArrowAnnotation {
+  cardId: string;
+  coordinate: { x: number; y: number };
+  text: string;
+  color?: string;
+}
 
 interface CanvasStore {
   cards: CardData[];
@@ -11,6 +26,7 @@ interface CanvasStore {
   draggedCardId: string | null;
   maxZIndex: number;
   previewCard: CardData | null;
+  annotations: ArrowAnnotation[];
   loadFromCookie: () => void;
   saveToCookie: () => void;
   clearCookie: () => void;
@@ -24,6 +40,16 @@ interface CanvasStore {
   openPreview: (card: CardData) => void;
   closePreview: () => void;
 }
+
+const DEFAULT_ANNOTATIONS: ArrowAnnotation[] = (rawAnnotations as RawArrowAnnotation[]).map((annotation) => ({
+  cardId: annotation.cardId,
+  coordinate: {
+    x: annotation.coordinate.x,
+    y: annotation.coordinate.y,
+  },
+  text: annotation.text,
+  color: annotation.color,
+}));
 
 const loadCardsFromCookie = (): CardData[] | null => {
   const saved = Cookies.get(COOKIE_KEY);
@@ -43,6 +69,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   draggedCardId: null,
   maxZIndex: 1,
   previewCard: null,
+  annotations: DEFAULT_ANNOTATIONS,
 
   loadFromCookie: () => {
     const savedCards = loadCardsFromCookie();
@@ -135,6 +162,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
       maxZIndex: 1,
       draggedCardId: null,
       previewCard: null,
+      annotations: DEFAULT_ANNOTATIONS,
     });
     get().clearCookie();
   },

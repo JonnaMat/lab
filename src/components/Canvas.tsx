@@ -4,10 +4,11 @@ import { Card } from './Card';
 import { ResetButton } from './ResetButton';
 import { ViewportIndicators } from './ViewportIndicators';
 import { PreviewModal } from './PreviewModal';
+import { ArrowOverlay } from './ArrowOverlay';
 
 export function Canvas() {
   const canvasRef = useRef<HTMLDivElement>(null);
-  const { cards, viewport, loadFromCookie, pan, zoom, draggedCardId } = useCanvasStore();
+  const { cards, viewport, loadFromCookie, pan, zoom, draggedCardId, annotations } = useCanvasStore();
   const isPanning = useRef(false);
   const lastPos = useRef({ x: 0, y: 0 });
   const [panCount, setPanCount] = useState(0);
@@ -88,6 +89,7 @@ export function Canvas() {
             shapeRendering: 'geometricPrecision',
           }}
         >
+          <ArrowOverlay annotations={annotations} draggedCardId={draggedCardId} />
           {cards.map((card) => (
             <Card
               key={card.id}
