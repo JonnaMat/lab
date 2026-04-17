@@ -52,7 +52,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`absolute w-72 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90 border border-[#FFB86C]/30
+        className={`absolute w-72 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90
           ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102`}
         style={style}
         onMouseDown={handleMouseDown}
@@ -85,7 +85,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`absolute w-80 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90 border border-[#FFB86C]/30
+        className={`absolute w-80 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90
           ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102`}
         style={style}
         onMouseDown={handleMouseDown}
@@ -115,7 +115,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`absolute w-64 rounded-xl cursor-pointer select-none bg-[#282A36]/90 border border-[#BD93F9]/30
+        className={`absolute w-64 rounded-xl cursor-pointer select-none bg-[#282A36]/90
           ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102`}
         style={style}
         onMouseDown={handleMouseDown}
@@ -145,7 +145,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`absolute w-[28rem] rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90 border border-[#F1FA8C]/30
+        className={`absolute w-[28rem] rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90
           ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102 group`}
         style={style}
         onMouseDown={handleMouseDown}
@@ -199,7 +199,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`absolute w-80 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90 border border-[#FF5555]/30
+        className={`absolute w-80 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90
           ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102 group`}
         style={style}
         onMouseDown={handleMouseDown}
@@ -234,7 +234,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
   return (
     <div
       data-card-id={card.id}
-      className={`absolute w-72 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90 border border-[#8BE9FD]/20
+      className={`absolute w-72 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90
         ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102`}
       style={style}
       onMouseDown={handleMouseDown}
