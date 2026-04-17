@@ -123,7 +123,7 @@ export const DEFAULT_CARDS: CardData[] = [
     y: 886,
     zIndex: 1,
     title: "huggingface-slack-app",
-    description: "GitHub bots for Slack and HF integration",
+    description: "Slack bot tracking HF releases & updates",
     type: "article",
     link: "https://github.com/JonnaMat/huggingface-slack-app",
     cardType: "github",
