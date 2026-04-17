@@ -131,8 +131,8 @@ export const DEFAULT_CARDS: CardData[] = [
   // Case Studies
   {
     id: "c15",
-    x: 1459,
-    y: -292,
+    x: 1385,
+    y: -253,
     zIndex: 1,
     title: "Talk @ EdgeAI Foundation 2025",
     description: "The Optimization Trap in EdgeAI",
@@ -178,8 +178,8 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "c22",
-    x: 1315,
-    y: -87,
+    x: 1307,
+    y: 19,
     zIndex: 1,
     title: "How to Prune Attention",
     description:
