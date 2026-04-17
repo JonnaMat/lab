@@ -81,6 +81,7 @@ export function Canvas() {
           onMouseDown={handleCanvasMouseDown}
         >
           <div
+            data-canvas-root="true"
             className="relative w-[1400px] h-[900px]"
           style={{
             transform: `translate3d(${viewport.offsetX}px, ${viewport.offsetY}px, 0) scale(${viewport.scale})`,
@@ -89,7 +90,7 @@ export function Canvas() {
             shapeRendering: 'geometricPrecision',
           }}
         >
-          <ArrowOverlay annotations={annotations} draggedCardId={draggedCardId} />
+          <ArrowOverlay annotations={annotations} draggedCardId={draggedCardId} scale={viewport.scale} />
           {cards.map((card) => (
             <Card
               key={card.id}

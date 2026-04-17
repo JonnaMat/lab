@@ -13,6 +13,7 @@ const DEFAULT_ARROW_COLOR = 'var(--dracula-comment)';
 interface ArrowOverlayProps {
   annotations: ArrowAnnotation[];
   draggedCardId: string | null;
+  scale: number;
 }
 
 interface CardBounds {
@@ -63,17 +64,22 @@ function getRectEdgeIntersection(start: { x: number; y: number }, bounds: CardBo
   };
 }
 
-function getCardBounds(cardId: string): CardBounds | null {
+function getCardBounds(cardId: string, scale: number): CardBounds | null {
   const cardEl = document.querySelector<HTMLElement>(`[data-card-id="${cardId}"]`);
-  if (!cardEl || !cardEl.offsetParent) {
+  const canvasRootEl = document.querySelector<HTMLElement>('[data-canvas-root="true"]');
+
+  if (!cardEl || !canvasRootEl) {
     return null;
   }
 
+  const cardRect = cardEl.getBoundingClientRect();
+  const canvasRect = canvasRootEl.getBoundingClientRect();
+
   return {
-    x: cardEl.offsetLeft,
-    y: cardEl.offsetTop,
-    width: cardEl.offsetWidth,
-    height: cardEl.offsetHeight,
+    x: (cardRect.left - canvasRect.left) / scale,
+    y: (cardRect.top - canvasRect.top) / scale,
+    width: cardRect.width / scale,
+    height: cardRect.height / scale,
   };
 }
 
@@ -138,7 +144,6 @@ function buildArrow(annotation: ArrowAnnotation, bounds: CardBounds) {
   const loopWidth = 0.15 + random() * 0.045;
   const loopPhase = random() * Math.PI * 2;
   const loopFrequency = 2 + Math.floor(random() * 3);
-  const wobble = 1.4 + random() * 1.4;
   const color = annotation.color ?? DEFAULT_ARROW_COLOR;
   const sampleCount = 42;
   const points = Array.from({ length: sampleCount + 1 }, (_, index) => {
@@ -168,10 +173,19 @@ function buildArrow(annotation: ArrowAnnotation, bounds: CardBounds) {
   const arrowSpread = 7 + random() * 3;
   const leftHeadPath = buildArrowWing(end, tipTangent, 1, arrowLength, arrowSpread);
   const rightHeadPath = buildArrowWing(end, tipTangent, -1, arrowLength, arrowSpread);
-  const textOffset = 10 + random() * 10;
+  const textAnchorIndex = Math.max(1, Math.min(points.length - 2, Math.round(points.length * (0.14 + random() * 0.06))));
+  const textAnchor = points[textAnchorIndex];
+  const nextTextPoint = points[textAnchorIndex + 1];
+  const textTangent = normalizeVector(
+    nextTextPoint.x - textAnchor.x,
+    nextTextPoint.y - textAnchor.y
+  );
+  const textNormal = { x: -textTangent.y, y: textTangent.x };
+  const textOffset = 18 + random() * 10;
+  const textBacktrack = dx > 0 ? 34 + random() * 12 : 0;
   const text = {
-    x: start.x - unitX * textOffset + perpX * 0,
-    y: start.y - unitY * textOffset + perpY * 0,
+    x: textAnchor.x + textNormal.x * textOffset - textTangent.x * textBacktrack,
+    y: textAnchor.y + textNormal.y * textOffset,
   };
 
   return {
@@ -183,7 +197,7 @@ function buildArrow(annotation: ArrowAnnotation, bounds: CardBounds) {
   };
 }
 
-export function ArrowOverlay({ annotations, draggedCardId }: ArrowOverlayProps) {
+export function ArrowOverlay({ annotations, draggedCardId, scale }: ArrowOverlayProps) {
   const [cardBounds, setCardBounds] = useState<Record<string, CardBounds>>({});
 
   useEffect(() => {
@@ -192,7 +206,7 @@ export function ArrowOverlay({ annotations, draggedCardId }: ArrowOverlayProps) 
     const updateBounds = () => {
       const nextBounds: Record<string, CardBounds> = {};
       for (const annotation of annotations) {
-        const bounds = getCardBounds(annotation.cardId);
+        const bounds = getCardBounds(annotation.cardId, scale);
         if (bounds) {
           nextBounds[annotation.cardId] = bounds;
         }
@@ -218,7 +232,7 @@ export function ArrowOverlay({ annotations, draggedCardId }: ArrowOverlayProps) 
       window.cancelAnimationFrame(frameId);
       window.removeEventListener('resize', updateBounds);
     };
-  }, [annotations, draggedCardId]);
+  }, [annotations, draggedCardId, scale]);
 
   return (
     <svg
@@ -273,7 +287,12 @@ export function ArrowOverlay({ annotations, draggedCardId }: ArrowOverlayProps) 
               x={arrow.text.x}
               y={arrow.text.y}
               fill={arrow.color}
+              stroke="rgba(33, 34, 44, 0.92)"
+              strokeWidth="6"
+              paintOrder="stroke"
               fontWeight="700"
+              textAnchor="middle"
+              dominantBaseline="middle"
               opacity="0.96"
             >
               {annotation.text}
