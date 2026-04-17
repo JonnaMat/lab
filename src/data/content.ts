@@ -3,10 +3,14 @@ export const articleContent: Record<string, {
   quote?: string;
   tags: string[];
   image?: string;
+  imageAlt?: string;
   keyPoints?: string[];
   authors?: string[];
   subjects?: string[];
   published?: string;
+  kind?: 'blog' | 'award';
+  sourceLabel?: string;
+  ctaLabel?: string;
 }> = {
   '2603.14591': {
     hook: 'FlashHead reframes token prediction as a retrieval problem, achieving up to 1.75× model-level inference speedup while maintaining accuracy.',
@@ -46,11 +50,28 @@ export const articleContent: Record<string, {
   'cosmos-reason2-report': {
     hook: 'Benchmark report for optimizing Cosmos-Reason2 (Qwen3-VL) on Jetson Orin Nano. From OOM to running with near-zero accuracy loss.',
     image: 'https://huggingface.co/datasets/embedl/documentation-images/resolve/main/Edge-Inference-Benchmarks/Cosmos-Reason2-2B__orin_nano_super.svg',
+    imageAlt: 'Benchmark visualization for Cosmos-Reason2 on Jetson Orin Nano',
     tags: ['Edge AI', 'Quantization', 'Jetson'],
     keyPoints: [
       'Mixed-precision quantization',
       '4-bit weight, 8-bit activation',
       'Sub-1W inference on edge',
+    ],
+  },
+  '4347835': {
+    kind: 'award',
+    hook: 'Grand Prize for Engineering - Rising Star, issued by Ny Teknik in November 2024.',
+    quote: 'As a role model for women in one of the most male-dominated areas of the tech industry, she shows how expertise, commitment and leadership can pave the way for new opportunities and inspire future generations. With her deep knowledge of computer science and mathematics, combined with her leadership and ability to think strategically, she has a key role in driving the development of the AI industry forward.',
+    tags: ['Award', 'AI Industry', 'Leadership'],
+    image: 'https://image.nyteknik.se/4347838.webp?imageId=4347838&x=0.00&y=7.18&cropw=100.00&croph=85.63&width=2116&height=1208&format=webp',
+    imageAlt: 'Portrait from Ny Teknik article about the Rising Star engineering award',
+    published: 'Issued in Nov 2024',
+    sourceLabel: 'Ny Teknik',
+    ctaLabel: 'Read article',
+    keyPoints: [
+      'Recognized for technical depth in computer science and mathematics',
+      'Highlighted as a role model for women in AI and engineering',
+      'Cited for leadership, strategic thinking, and industry impact',
     ],
   },
 };
@@ -119,6 +140,18 @@ export const githubContent: Record<string, {
         { emoji: '🚀', count: 2, active: false },
       ],
     },
+  },
+};
+
+export const paperContent: Record<string, {
+  abstract?: string[];
+}> = {
+  '78958': {
+    abstract: [
+      'With the continued growth of deep learning models in terms of size and computational requirements, the need for efficient models for deployment on resource-constrained devices becomes crucial. Structured pruning has emerged as a proven method to speed up models and reduce computational requirements. Structured pruning involves removing filters, channels, or groups of operations from a network, effectively modifying its architecture. Since the optimal hyperparameters of a model are tightly coupled to its architecture, it is unclear how pruning affects the choice of hyperparameters. To answer this question, we investigate the impact of deep neural network pruning on the hyperparameter performance space.',
+      'In this work, we perform a series of experiments on popular classification models, ResNet-56, MobileNetV2, and ResNet-50, using CIFAR-10 and ImageNet datasets. We examine the effect of uniform and non-uniform structured magnitude pruning on the learning rate and weight decay. Specifically, we explore how pruning affects their relationship and the risk associated with not tuning these hyperparameters after pruning. The experiments reveal that pruning does not have a significant impact on the learning rate and weight decay, suggesting that extensive hyperparameter tuning after pruning may not be crucial for optimal performance.',
+      'Overall, this study provides insights into the complex dynamics between pruning, model performance, and optimal hyperparameters. The findings give guidance for optimising and fine-tuning pruned models and contribute to advancing model compression and hyperparameter tuning, highlighting the interplay between model architecture and hyperparameters.',
+    ],
   },
 };
 

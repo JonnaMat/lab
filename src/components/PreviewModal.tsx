@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../store/canvasStore';
-import { articleContent, githubContent, getSlug, getRepo } from '../data/content';
-import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon, PaperIcon } from './Icons';
+import { articleContent, githubContent, paperContent, getSlug, getRepo } from '../data/content';
+import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon, AwardIcon, PaperIcon } from './Icons';
 import hfLogo from '../assets/hf-logo.svg';
 
 interface GitHubStats {
@@ -59,12 +59,14 @@ export function PreviewModal() {
 
   const isGitHub = previewCard?.cardType === 'github';
   const isArxiv = previewCard?.cardType === 'arxiv';
+  const isAward = previewCard?.cardType === 'award';
   const isPaper = previewCard?.cardType === 'paper';
   const isYoutube = previewCard?.cardType === 'youtube';
   const repo = previewCard?.link ? getRepo(previewCard.link) : null;
   const slug = previewCard?.link?.split('/').pop() || '';
   const ghSlug = previewCard?.link ? getSlug(previewCard.link) : '';
   const content = articleContent[slug];
+  const paperDetails = paperContent[slug];
   const ghContent = githubContent[ghSlug];
   const mockDemo = ghContent?.mockDemo;
   const firstModelName = mockDemo?.modelLinks?.[0]?.name;
@@ -293,7 +295,7 @@ export function PreviewModal() {
                   <div className="flex flex-wrap gap-2 mb-2">
                     <span className="px-2 py-0.5 text-xs rounded-full bg-[#FFB86C]/20 text-[#FFB86C] border border-[#FFB86C]/30">arXiv Paper</span>
                     {content?.subjects?.slice(0, 2).map(subj => (
-                      <span key={subj} className="px-2 py-0.5 text-xs rounded-full bg-[#F1FA8C]/20 text-[#F1FA8C] border border-[#F1FA8C]/30">{subj.split(' ')[0]}</span>
+                      <span key={subj} className="px-2 py-0.5 text-xs rounded-full bg-[#F1FA8C]/20 text-[#F1FA8C] border border-[#F1FA8C]/30">{subj}</span>
                     ))}
                   </div>
                   <h2 className="text-xl font-bold text-[#F8F8F2] leading-tight">{previewCard.title}</h2>
@@ -323,8 +325,9 @@ export function PreviewModal() {
                 <ExternalLinkIcon className="w-4 h-4" /> View on arXiv
               </a>
               <a href={pdfUrl} target="_blank" rel="noopener noreferrer"
+                download={`${slug}.pdf`}
                 className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#FFB86C] bg-[#FFB86C]/10 border border-[#FFB86C]/30 rounded-lg hover:bg-[#FFB86C]/20 transition-colors">
-                Download PDF
+                Open PDF
               </a>
             </div>
           </div>
@@ -364,6 +367,17 @@ export function PreviewModal() {
             <div className="flex items-center gap-4 text-xs text-[#6272A4] mb-4">
               <span className="font-mono text-[#FFB86C]">{previewCard.description}</span>
             </div>
+
+            {paperDetails?.abstract && (
+              <div className="mb-6 space-y-4">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#F1FA8C]">Abstract</h3>
+                {paperDetails.abstract.map((paragraph, index) => (
+                  <p key={index} className="text-sm leading-relaxed text-[#F8F8F2]/80">
+                    {paragraph}
+                  </p>
+                ))}
+              </div>
+            )}
             
             <div className="flex gap-3">
               <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
@@ -371,6 +385,66 @@ export function PreviewModal() {
                 <ExternalLinkIcon className="w-4 h-4" /> View Paper
               </a>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAward) {
+    return (
+      <div ref={overlayRef} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
+        <div className="bg-[#282A36] rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden border border-[#FFD21E]/30">
+          {content?.image && (
+            <div className="relative h-64 border-b border-[#343746]">
+              <img src={content.image} alt={content.imageAlt || previewCard.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#282A36] via-[#282A36]/30 to-transparent" />
+              <div className="absolute top-5 left-5 flex items-center gap-3">
+                <div className="w-14 h-14 rounded-2xl bg-[#FFD21E]/15 backdrop-blur-sm border border-[#FFD21E]/30 flex items-center justify-center text-[#FFD21E]">
+                  <AwardIcon className="w-7 h-7" />
+                </div>
+                <span className="px-3 py-1 text-sm rounded-full bg-[#FFD21E]/15 text-[#FFD21E] border border-[#FFD21E]/30">Engineering Award</span>
+              </div>
+            </div>
+          )}
+
+          <div className="p-6">
+            <div className="flex items-start justify-between gap-4 mb-5">
+              <div>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-[#FFD21E]/15 text-[#FFD21E] border border-[#FFD21E]/30">{content?.sourceLabel || 'Award'}</span>
+                  {content?.published && (
+                    <span className="px-2 py-0.5 text-xs rounded-full bg-[#8BE9FD]/20 text-[#8BE9FD] border border-[#8BE9FD]/30">{content.published}</span>
+                  )}
+                </div>
+                <h2 className="text-2xl font-bold text-[#F8F8F2] leading-tight">{previewCard.title}</h2>
+              </div>
+              <button onClick={closePreview} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+
+            {content?.hook && <p className="text-[#F8F8F2]/85 leading-relaxed mb-5 text-lg">{content.hook}</p>}
+
+            {content?.quote && (
+              <blockquote className="border-l-4 border-[#FFD21E] pl-4 py-2 mb-6 bg-[#FFD21E]/10 rounded-r-lg">
+                <p className="text-[#F8F8F2] italic leading-relaxed">{content.quote}</p>
+              </blockquote>
+            )}
+
+            {content?.keyPoints && (
+              <ul className="space-y-2 mb-6">
+                {content.keyPoints.map((point, i) => (
+                  <li key={i} className="flex items-start gap-3 text-[#F8F8F2]/80">
+                    <CheckIcon className="w-5 h-5 text-[#FFD21E] shrink-0 mt-0.5" />
+                    {point}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#282A36] bg-gradient-to-r from-[#FFD21E] to-[#F1FA8C] rounded-lg hover:opacity-90 transition-opacity">
+              <ExternalLinkIcon className="w-4 h-4" /> {content?.ctaLabel || 'Read more'}
+            </a>
           </div>
         </div>
       </div>
@@ -393,13 +467,13 @@ export function PreviewModal() {
             </div>
             <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
               className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#FFD21E] bg-[#FFD21E]/10 border border-[#FFD21E]/30 rounded-lg hover:bg-[#FFD21E]/20 transition-colors">
-              <ExternalLinkIcon /> Open on HF
+              <ExternalLinkIcon /> {content?.ctaLabel || 'Open on HF'}
             </a>
           </div>
 
           {content?.image && (
             <div className="mb-6 rounded-xl overflow-hidden border border-[#343746]">
-              <img src={content.image} alt="Benchmark visualization" className="w-full" />
+              <img src={content.image} alt={content.imageAlt || previewCard.title} className="w-full" />
             </div>
           )}
 

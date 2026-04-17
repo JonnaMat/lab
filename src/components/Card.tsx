@@ -2,14 +2,18 @@ import { useRef } from 'react';
 import { CardData } from '../data/initialCards';
 import { useCardDrag } from '../hooks/useCardDrag';
 import { useCanvasStore } from '../store/canvasStore';
-import { ArxivIcon, PaperIcon, GitHubLogoIcon } from './Icons';
+import { ArxivIcon, AwardIcon, PaperIcon, GitHubLogoIcon } from './Icons';
 
 const articleContent: Record<string, { summary: string; authors?: string[] }> = {
   'how-to-vllm-plugin': { summary: 'A practical guide to building vLLM plugins using the general_plugins entry point.' },
   'flashhead': { summary: 'Reframes token prediction as a retrieval problem for faster LLM inference.' },
   'cosmos-reason2-report': { summary: 'Benchmark report for optimizing Cosmos-Reason2 on Jetson Orin Nano.' },
   '2603.14591': { summary: 'Training-free drop-in replacement for dense classification head. Up to 1.75× inference speedup.' },
+  '4347835': { summary: 'Ny Teknik Rising Star award recognizing technical depth, leadership, and AI industry impact.' },
 };
+
+const smallCardLogoBadgeClass = 'w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 p-0';
+const smallCardLogoClass = 'w-6 h-6 object-scale-down';
 
 export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAnother: boolean }) {
   const hoverTimeout = useRef<number | null>(null);
@@ -62,8 +66,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0">
-              <ArxivIcon className="w-6 h-6" />
+            <div className={smallCardLogoBadgeClass}>
+              <ArxivIcon className={smallCardLogoClass} />
             </div>
             <span className="text-xs text-[#FFB86C] font-mono">{card.description}</span>
           </div>
@@ -95,8 +99,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0">
-              <PaperIcon className="w-6 h-6" />
+            <div className={smallCardLogoBadgeClass}>
+              <PaperIcon className={smallCardLogoClass} />
             </div>
             <span className="text-xs text-[#FFB86C] font-mono">{card.description}</span>
           </div>
@@ -125,8 +129,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
       >
         <div className="p-4">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0">
-              <GitHubLogoIcon className="w-6 h-6" />
+            <div className={smallCardLogoBadgeClass}>
+              <GitHubLogoIcon className={smallCardLogoClass} />
             </div>
             <span className="text-xs text-[#6272A4] font-mono">{card.description}</span>
           </div>
@@ -222,6 +226,46 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
             </div>
           </div>
           <div className="absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-medium rounded bg-red-600 text-white">YouTube</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (card.cardType === 'award') {
+    return (
+      <div
+        data-card-id={card.id}
+        className={`absolute w-80 rounded-xl cursor-pointer select-none overflow-hidden bg-[#282A36]/90
+          ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} hover:card-shadow-hover hover:scale-102 group`}
+        style={style}
+        onMouseDown={handleMouseDown}
+        onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
+        onMouseLeave={() => !isDraggingAnother && handleMouseLeave()}
+        onClick={handleClick}
+      >
+        <div className="relative h-40 overflow-hidden">
+          <img
+            src="https://image.nyteknik.se/4347838.webp?imageId=4347838&x=0.00&y=7.18&cropw=100.00&croph=85.63&width=2116&height=1208&format=webp"
+            alt={card.title}
+            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#282A36] via-[#282A36]/45 to-transparent" />
+          <div className="absolute top-3 left-3 flex items-center gap-2">
+            <div className="w-9 h-9 rounded-lg bg-[#FFD21E]/15 backdrop-blur-sm border border-[#FFD21E]/30 flex items-center justify-center text-[#FFD21E]">
+              <AwardIcon className="w-5 h-5" />
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4">
+          <span className="text-xs text-[#FFB86C] font-mono">{card.description}</span>
+          <h3 className="font-bold text-[#F8F8F2] text-sm leading-tight mt-2 mb-2">{card.title}</h3>
+          <p className="text-xs text-[#6272A4] line-clamp-2 mb-3">{articleContent['4347835'].summary}</p>
+          <div className="pt-2 border-t border-[#343746]">
+            <button className="text-xs text-[#FFD21E] hover:text-[#F1FA8C] transition-colors font-medium" onClick={handleReadMoreClick}>
+              View award →
+            </button>
+          </div>
         </div>
       </div>
     );

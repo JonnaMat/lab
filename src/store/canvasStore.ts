@@ -51,11 +51,21 @@ const DEFAULT_ANNOTATIONS: ArrowAnnotation[] = (rawAnnotations as RawArrowAnnota
   color: annotation.color,
 }));
 
+const mergeCardsWithDefaults = (savedCards: CardData[]): CardData[] => {
+  const savedById = new Map(savedCards.map((card) => [card.id, card]));
+
+  return DEFAULT_CARDS.map((defaultCard) => {
+    const savedCard = savedById.get(defaultCard.id);
+    return savedCard ? { ...defaultCard, ...savedCard } : { ...defaultCard };
+  });
+};
+
 const loadCardsFromCookie = (): CardData[] | null => {
   const saved = Cookies.get(COOKIE_KEY);
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved) as CardData[];
+      return mergeCardsWithDefaults(parsed);
     } catch {
       return null;
     }

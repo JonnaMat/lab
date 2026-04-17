@@ -22,6 +22,18 @@ export const ExternalLinkIcon = ({ className = 'w-3.5 h-3.5' }: { className?: st
   </svg>
 );
 
+export const AwardIcon = ({ className = 'w-5 h-5' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.8}
+      d="M12 3l2.08 4.22 4.66.68-3.37 3.29.8 4.64L12 13.64l-4.17 2.19.8-4.64-3.37-3.29 4.66-.68L12 3z"
+    />
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 15.5 7 21l5-2 5 2-2-5.5" />
+  </svg>
+);
+
 import arxivLogo from '../assets/arxiv-logomark-small.svg';
 import guSeal from '../assets/gu-seal.svg';
 import gitHubLogo from '../assets/GitHub_Invertocat_Black.svg';

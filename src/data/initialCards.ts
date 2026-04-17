@@ -7,7 +7,7 @@ export interface CardData {
   description: string;
   type: 'article' | 'demo';
   link: string;
-  cardType?: 'article' | 'github' | 'arxiv' | 'paper' | 'space' | 'youtube';
+  cardType?: 'article' | 'award' | 'github' | 'arxiv' | 'paper' | 'space' | 'youtube';
 }
 
 export interface Viewport {
@@ -147,6 +147,17 @@ export const DEFAULT_CARDS: CardData[] = [
     type: 'demo',
     link: 'https://huggingface.co/spaces/embedl/Edge-Inference-Benchmarks',
     cardType: 'space',
+  },
+  {
+    id: 'c20',
+    x: 1720,
+    y: 860,
+    zIndex: 1,
+    title: 'Grand Prize for Engineering - Rising Star',
+    description: 'Ny Teknik · Nov 2024',
+    type: 'article',
+    link: 'https://www.nyteknik.se/ingenjorsdagen/ais-storsta-flaskhals-och-hur-tekniken-kan-losa-den/4347835',
+    cardType: 'award',
   },
 ];
 
