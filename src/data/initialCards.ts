@@ -144,6 +144,7 @@ export const DEFAULT_CARDS: CardData[] = [
     title: 'How to Prune Attention',
     description: 'Research explainer on pruning attention heads, channels per head, and embedding width.',
     type: 'article',
+    link: 'https://research.explainer/how-to-prune-attention',
     cardType: 'deep-dive',
   },
 {

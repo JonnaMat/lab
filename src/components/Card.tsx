@@ -1,10 +1,11 @@
 import { useRef } from 'react';
 import { CardData } from '../data/initialCards';
+import { articleContent as articleMeta } from '../data/content';
 import { useCardDrag } from '../hooks/useCardDrag';
 import { useCanvasStore } from '../store/canvasStore';
 import { ArxivIcon, AwardIcon, PaperIcon, GitHubLogoIcon } from './Icons';
 
-const articleContent: Record<string, { summary: string; authors?: string[] }> = {
+const articleSummaries: Record<string, { summary: string; authors?: string[] }> = {
   'how-to-vllm-plugin': { summary: 'A practical guide to building vLLM plugins using the general_plugins entry point.' },
   'flashhead': { summary: 'Reframes token prediction as a retrieval problem for faster LLM inference.' },
   'cosmos-reason2-report': { summary: 'Benchmark report for optimizing Cosmos-Reason2 on Jetson Orin Nano.' },
@@ -59,7 +60,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
 
   if (card.cardType === 'arxiv') {
     const slug = card.link.split('/').pop() || '';
-    const content = articleContent[slug];
+    const content = articleSummaries[slug];
 
     return (
       <div
@@ -262,7 +263,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
         <div className="p-4">
           <span className="text-xs text-dracula-orange font-mono">{card.description}</span>
           <h3 className={`${cardContentTitleClass} mt-2 mb-2`}>{card.title}</h3>
-          <p className="text-xs text-dracula-comment line-clamp-2 mb-3">{articleContent['4347835'].summary}</p>
+          <p className="text-xs text-dracula-comment line-clamp-2 mb-3">{articleSummaries['4347835'].summary}</p>
           <div className={cardDividerClass}>
             <button className="action-link action-link-yellow" onClick={handleReadMoreClick}>
               View award →
@@ -274,6 +275,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
   }
 
   if (card.cardType === 'case-study') {
+    const slug = card.link.split('/').pop() || '';
+    const content = articleMeta[slug];
     return (
       <div
         data-card-id={card.id}
@@ -284,24 +287,27 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
         onMouseLeave={() => !isDraggingAnother && handleMouseLeave()}
         onClick={handleClick}
       >
-        <div className="relative h-28 overflow-hidden">
-          <img
-            src="https://www.embedl.com/hubfs/Vision%20Transformers-min.png"
-            alt={card.title}
-            className="w-full h-full object-cover opacity-60 transition-transform duration-300 group-hover:scale-105"
-          />
-          <div className="media-fade-top" />
-          <div className="absolute top-2 right-2">
-            <span className="badge badge-orange">Case Study</span>
+        {content?.image && (
+          <div className="relative h-28 overflow-hidden">
+            <img
+              src={content.image}
+              alt={content.imageAlt || card.title}
+              className="w-full h-full object-cover opacity-60 transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="media-fade-top" />
+            <div className="absolute top-2 right-2">
+              <span className="badge badge-orange">Case Study</span>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className="p-4">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h3 className={`${cardContentTitleClass} flex-1`}>{card.title}</h3>
+            {!content?.image && <span className="badge badge-orange shrink-0">Case Study</span>}
           </div>
 
-          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">{articleContent['optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin'].summary}</p>
+          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">{articleSummaries['optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin'].summary}</p>
 
           <div className={cardDividerClass}>
             <button className="action-link action-link-orange" onClick={handleReadMoreClick}>
@@ -314,6 +320,8 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
   }
 
   if (card.cardType === 'deep-dive') {
+    const slug = card.link.split('/').pop() || '';
+    const content = articleMeta[slug];
     return (
       <div
         data-card-id={card.id}
@@ -324,13 +332,27 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
         onMouseLeave={() => !isDraggingAnother && handleMouseLeave()}
         onClick={handleClick}
       >
+        {content?.image && (
+          <div className="relative h-28 overflow-hidden">
+            <img
+              src={content.image}
+              alt={content.imageAlt || card.title}
+              className="w-full h-full object-cover opacity-45 transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="media-fade-top" />
+            <div className="absolute top-2 right-2">
+              <span className="badge badge-purple">Deep Dive</span>
+            </div>
+          </div>
+        )}
+
         <div className="p-4">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h3 className={`${cardContentTitleClass} flex-1`}>{card.title}</h3>
-            <span className="badge badge-purple shrink-0">Deep Dive</span>
+            {!content?.image && <span className="badge badge-purple shrink-0">Deep Dive</span>}
           </div>
 
-          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">{articleContent['how-to-prune-attention'].summary}</p>
+          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">{articleSummaries['how-to-prune-attention'].summary}</p>
 
           <div className={cardDividerClass}>
             <button className="action-link action-link-purple" onClick={handleReadMoreClick}>
@@ -343,7 +365,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
   }
 
   const slug = card.link.split('/').pop() || '';
-  const content = articleContent[slug];
+  const content = articleSummaries[slug];
   const isImageCard = slug === 'cosmos-reason2-report';
 
   return (

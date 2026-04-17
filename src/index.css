@@ -275,25 +275,43 @@ body {
     min-height: 20rem;
   }
 
-  .case-study-cube-stack {
+  .case-study-cuboid {
     position: relative;
-    width: min(100%, 20rem);
-    height: 13rem;
-    margin: 1rem auto 0;
+    width: min(100%, 22rem);
+    height: 14rem;
+    margin: 1.25rem auto 0;
+    animation: case-study-float 4.4s ease-in-out infinite;
   }
 
-  .case-study-cube-layer {
+  .case-study-face {
     position: absolute;
-    inset: 0 auto auto 0;
     display: grid;
-    grid-template-columns: repeat(9, minmax(0, 1fr));
-    gap: 0.3rem;
-    width: 15rem;
-    transform:
-      translateX(calc(var(--layer-index) * 1.7rem))
-      translateY(calc(var(--layer-index) * -0.85rem));
-    animation: case-study-float 4s ease-in-out infinite;
-    animation-delay: calc(var(--layer-index) * -0.35s);
+    gap: 0.18rem;
+  }
+
+  .case-study-face-front {
+    left: 1rem;
+    bottom: 1.1rem;
+    grid-template-columns: repeat(9, 1fr);
+    width: 13.8rem;
+  }
+
+  .case-study-face-top {
+    left: 1rem;
+    top: 1.35rem;
+    grid-template-columns: repeat(9, 1fr);
+    width: 13.8rem;
+    transform: skewX(-42deg);
+    transform-origin: bottom left;
+  }
+
+  .case-study-face-side {
+    right: 1.05rem;
+    bottom: 1.1rem;
+    grid-template-columns: repeat(3, 1fr);
+    width: 4.4rem;
+    transform: skewY(-48deg);
+    transform-origin: bottom left;
   }
 
   .case-study-cell {
@@ -326,15 +344,17 @@ body {
   }
 
   .case-study-axis-y {
-    left: 0.3rem;
-    top: 58%;
+    left: 0.9rem;
+    top: 70%;
     transform: rotate(-90deg) translateX(-50%);
     transform-origin: left top;
   }
 
   .case-study-axis-z {
-    right: 0.8rem;
-    top: 1rem;
+    left: 0.75rem;
+    top: 3rem;
+    transform: rotate(-48deg);
+    transform-origin: left center;
   }
 
   .case-study-impact {
@@ -511,13 +531,9 @@ body {
 
 @keyframes case-study-float {
   0%, 100% {
-    transform:
-      translateX(calc(var(--layer-index) * 1.7rem))
-      translateY(calc(var(--layer-index) * -0.85rem));
+    transform: translateY(0);
   }
   50% {
-    transform:
-      translateX(calc(var(--layer-index) * 1.7rem))
-      translateY(calc(var(--layer-index) * -0.85rem - 0.2rem));
+    transform: translateY(-0.2rem);
   }
 }

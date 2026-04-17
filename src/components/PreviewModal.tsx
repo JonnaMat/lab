@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../store/canvasStore';
 import { articleContent, githubContent, paperContent, getSlug, getRepo } from '../data/content';
 import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon, AwardIcon, PaperIcon } from './Icons';
@@ -44,6 +44,17 @@ function isPrunedCell(mode: PruningMode, row: number, col: number) {
   if (mode === 'heads') return col >= 6;
   if (mode === 'channels') return col % 3 === 2;
   return row < 2;
+}
+
+function isTopPrunedCell(mode: PruningMode, _row: number, col: number) {
+  if (mode === 'heads') return col >= 6;
+  if (mode === 'channels') return col % 3 === 2;
+  return true;
+}
+
+function isSidePrunedCell(mode: PruningMode, row: number, _col: number) {
+  if (mode === 'embedding') return row < 2;
+  return true;
 }
 
 function TransformerPruningExplorer() {
@@ -99,27 +110,51 @@ function TransformerPruningExplorer() {
       </div>
 
       <div className="case-study-diagram">
-        <div className="case-study-cube-stack" aria-hidden="true">
-          {[2, 1, 0].map((layer) => (
-            <div
-              key={layer}
-              className="case-study-cube-layer"
-              style={{ ['--layer-index' as '--layer-index']: layer } as CSSProperties}
-            >
-              {Array.from({ length: 36 }).map((_, index) => {
-                const row = Math.floor(index / 9);
-                const col = index % 9;
-                const isPruned = isPrunedCell(activeMode, row, col);
+        <div className="case-study-cuboid" aria-hidden="true">
+          <div className="case-study-face case-study-face-top">
+            {Array.from({ length: 18 }).map((_, index) => {
+              const row = Math.floor(index / 9);
+              const col = index % 9;
+              const isPruned = isTopPrunedCell(activeMode, row, col);
 
-                return (
-                  <span
-                    key={`${layer}-${row}-${col}`}
-                    className={`case-study-cell ${isPruned ? 'case-study-cell-pruned' : 'case-study-cell-active'}`}
-                  />
-                );
-              })}
-            </div>
-          ))}
+              return (
+                <span
+                  key={`top-${row}-${col}`}
+                  className={`case-study-cell ${isPruned ? 'case-study-cell-pruned' : 'case-study-cell-active'}`}
+                />
+              );
+            })}
+          </div>
+
+          <div className="case-study-face case-study-face-front">
+            {Array.from({ length: 54 }).map((_, index) => {
+              const row = Math.floor(index / 9);
+              const col = index % 9;
+              const isPruned = isPrunedCell(activeMode, row, col);
+
+              return (
+                <span
+                  key={`front-${row}-${col}`}
+                  className={`case-study-cell ${isPruned ? 'case-study-cell-pruned' : 'case-study-cell-active'}`}
+                />
+              );
+            })}
+          </div>
+
+          <div className="case-study-face case-study-face-side">
+            {Array.from({ length: 18 }).map((_, index) => {
+              const row = Math.floor(index / 3);
+              const col = index % 3;
+              const isPruned = isSidePrunedCell(activeMode, row, col);
+
+              return (
+                <span
+                  key={`side-${row}-${col}`}
+                  className={`case-study-cell ${isPruned ? 'case-study-cell-pruned' : 'case-study-cell-active'}`}
+                />
+              );
+            })}
+          </div>
         </div>
 
         <div className="case-study-axis-label case-study-axis-x">
@@ -612,13 +647,13 @@ export function PreviewModal() {
             )}
           </div>
 
+          {content?.hook && <p className="surface-subtle leading-relaxed mb-4 text-lg">{content.hook}</p>}
+
           {content?.image && (
             <div className="mb-6 rounded-xl overflow-hidden border border-dracula-bg-light">
               <img src={content.image} alt={content.imageAlt || previewCard.title} className="w-full" />
             </div>
           )}
-
-          {content?.hook && <p className="surface-subtle leading-relaxed mb-4 text-lg">{content.hook}</p>}
 
           {content?.quote && (
             <blockquote className={articleQuoteClass}>
