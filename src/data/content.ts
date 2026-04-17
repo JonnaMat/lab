@@ -189,6 +189,7 @@ export const githubContent: Record<
       "Pull request and issue notifications",
       "Configurable alert triggers",
     ],
+    installCommand: "pip install huggingface-slack-app",
     mockDemo: {
       avatar: "https://avatars.githubusercontent.com/u/1463491",
       user: "HuggingFace",
