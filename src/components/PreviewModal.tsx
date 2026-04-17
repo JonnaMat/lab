@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { CSSProperties, useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../store/canvasStore';
 import { articleContent, githubContent, paperContent, getSlug, getRepo } from '../data/content';
 import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon, AwardIcon, PaperIcon } from './Icons';
@@ -8,6 +8,134 @@ interface GitHubStats {
   stars: number;
   forks: number;
   language: string;
+}
+
+type PruningMode = 'heads' | 'channels' | 'embedding';
+
+const pruningModes: PruningMode[] = ['heads', 'channels', 'embedding'];
+
+const pruningContent: Record<PruningMode, {
+  label: string;
+  title: string;
+  summary: string;
+  impact: string;
+}> = {
+  heads: {
+    label: 'Heads',
+    title: 'Remove whole attention heads',
+    summary: 'This zeros out complete head groups, reducing parallel attention branches while keeping the remaining heads unchanged.',
+    impact: 'Best when some heads contribute little and can be removed as an entire structured block.',
+  },
+  channels: {
+    label: 'Channels / head',
+    title: 'Trim width inside each head',
+    summary: 'This prunes channels from the query, key, and value tensors inside every head instead of removing the full head.',
+    impact: 'Useful when attention is still valuable, but each head is wider than the hardware really benefits from.',
+  },
+  embedding: {
+    label: 'Embedding size',
+    title: 'Shrink the shared embedding dimension',
+    summary: 'This removes slices across the embedding width that all heads depend on, shrinking the model more globally.',
+    impact: 'Most aggressive on model width, but it affects every head at once and usually needs tighter accuracy control.',
+  },
+};
+
+function isPrunedCell(mode: PruningMode, row: number, col: number) {
+  if (mode === 'heads') return col >= 6;
+  if (mode === 'channels') return col % 3 === 2;
+  return row < 2;
+}
+
+function TransformerPruningExplorer() {
+  const [activeMode, setActiveMode] = useState<PruningMode>('heads');
+  const [isAutoCycling, setIsAutoCycling] = useState(true);
+
+  useEffect(() => {
+    if (!isAutoCycling) return;
+
+    const interval = window.setInterval(() => {
+      setActiveMode((current) => pruningModes[(pruningModes.indexOf(current) + 1) % pruningModes.length]);
+    }, 3200);
+
+    return () => window.clearInterval(interval);
+  }, [isAutoCycling]);
+
+  const current = pruningContent[activeMode];
+
+  return (
+    <section className="case-study-panel mb-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+        <div>
+          <p className="case-study-kicker">Transformer Pruning</p>
+          <h3 className="surface-title text-xl mb-2">{current.title}</h3>
+          <p className="surface-subtle text-sm leading-relaxed max-w-xl">{current.summary}</p>
+        </div>
+        <div className="case-study-legend shrink-0">
+          <span className="case-study-legend-item">
+            <span className="case-study-legend-swatch case-study-legend-swatch-active" />
+            unchanged
+          </span>
+          <span className="case-study-legend-item">
+            <span className="case-study-legend-swatch case-study-legend-swatch-pruned" />
+            zeros / removed
+          </span>
+        </div>
+      </div>
+
+      <div className="case-study-toggle-group mt-4 mb-5">
+        {pruningModes.map((mode) => (
+          <button
+            key={mode}
+            type="button"
+            onClick={() => {
+              setActiveMode(mode);
+              setIsAutoCycling(false);
+            }}
+            className={`case-study-toggle ${activeMode === mode ? 'case-study-toggle-active' : ''}`}
+          >
+            {pruningContent[mode].label}
+          </button>
+        ))}
+      </div>
+
+      <div className="case-study-diagram">
+        <div className="case-study-cube-stack" aria-hidden="true">
+          {[2, 1, 0].map((layer) => (
+            <div
+              key={layer}
+              className="case-study-cube-layer"
+              style={{ ['--layer-index' as '--layer-index']: layer } as CSSProperties}
+            >
+              {Array.from({ length: 36 }).map((_, index) => {
+                const row = Math.floor(index / 9);
+                const col = index % 9;
+                const isPruned = isPrunedCell(activeMode, row, col);
+
+                return (
+                  <span
+                    key={`${layer}-${row}-${col}`}
+                    className={`case-study-cell ${isPruned ? 'case-study-cell-pruned' : 'case-study-cell-active'}`}
+                  />
+                );
+              })}
+            </div>
+          ))}
+        </div>
+
+        <div className="case-study-axis-label case-study-axis-x">
+          {activeMode === 'embedding' ? 'shared embedding width' : 'inner embedding size'}
+        </div>
+        <div className="case-study-axis-label case-study-axis-y">
+          {activeMode === 'embedding' ? 'embedding slices' : 'embedding size'}
+        </div>
+        <div className="case-study-axis-label case-study-axis-z">
+          {activeMode === 'heads' ? 'heads' : activeMode === 'channels' ? 'channels per head' : 'seq. length'}
+        </div>
+      </div>
+
+      <p className="case-study-impact mt-4">{current.impact}</p>
+    </section>
+  );
 }
 
 function AnimatedNumber({ value, suffix = '' }: { value: number; suffix?: string }) {
@@ -66,6 +194,8 @@ export function PreviewModal() {
   const slug = previewCard?.link?.split('/').pop() || '';
   const ghSlug = previewCard?.link ? getSlug(previewCard.link) : '';
   const content = articleContent[slug];
+  const isCaseStudy = previewCard?.cardType === 'case-study' || content?.kind === 'case-study';
+  const isDeepDive = previewCard?.cardType === 'deep-dive' || content?.kind === 'deep-dive';
   const paperDetails = paperContent[slug];
   const ghContent = githubContent[ghSlug];
   const mockDemo = ghContent?.mockDemo;
@@ -132,34 +262,34 @@ export function PreviewModal() {
 
   if (isGitHub) {
     return (
-      <div ref={overlayRef} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
-        <div className="bg-[#282A36] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#BD93F9]/30">
+      <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
+        <div className="modal-surface modal-surface-github">
           <div className="p-6">
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-[#BD93F9] to-[#FF79C6] flex items-center justify-center shrink-0 shadow-lg shadow-[#BD93F9]/30">
-                <GitHubIcon className="w-9 h-9 text-[#282A36]" />
+              <div className="hero-gradient-github w-16 h-16 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-dracula-purple/30">
+                <GitHubIcon className="w-9 h-9 text-dracula-bg" />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-[#F8F8F2] mb-1">{previewCard.title}</h2>
-                <p className="text-[#BD93F9] font-mono text-sm">{repo?.owner}/{repo?.repo}</p>
+                <h2 className="surface-title text-2xl mb-1">{previewCard.title}</h2>
+                <p className="text-dracula-purple font-mono text-sm">{repo?.owner}/{repo?.repo}</p>
               </div>
             </div>
 
             {stats && (
-              <div className="flex gap-6 mb-6 pb-6 border-b border-[#6272A4]/30">
-                <div className="text-center"><div className="text-2xl font-bold text-[#F8F8F2]"><AnimatedNumber value={stats?.stars || 0} /></div><div className="text-xs text-[#6272A4] uppercase">Stars</div></div>
-                <div className="text-center"><div className="text-2xl font-bold text-[#F8F8F2]"><AnimatedNumber value={stats?.forks || 0} /></div><div className="text-xs text-[#6272A4] uppercase">Forks</div></div>
-                <div className="text-center"><div className="text-2xl font-bold text-[#F8F8F2]">{stats?.language || '-'}</div><div className="text-xs text-[#6272A4] uppercase">Language</div></div>
+              <div className="flex gap-6 mb-6 pb-6 border-b border-dracula-comment/30">
+                <div className="text-center"><div className="surface-title text-2xl"><AnimatedNumber value={stats?.stars || 0} /></div><div className="text-xs text-dracula-comment uppercase">Stars</div></div>
+                <div className="text-center"><div className="surface-title text-2xl"><AnimatedNumber value={stats?.forks || 0} /></div><div className="text-xs text-dracula-comment uppercase">Forks</div></div>
+                <div className="text-center"><div className="surface-title text-2xl">{stats?.language || '-'}</div><div className="text-xs text-dracula-comment uppercase">Language</div></div>
               </div>
             )}
 
-            {ghContent?.description && <p className="text-lg text-[#F8F8F2]/80 leading-relaxed mb-6">{ghContent.description}</p>}
+            {ghContent?.description && <p className="surface-subtle text-lg leading-relaxed mb-6">{ghContent.description}</p>}
 
             {ghContent?.features && (
               <ul className="space-y-2 mb-6">
                 {ghContent.features.map((f, i) => (
-                  <li key={i} className="flex items-start gap-3 text-[#F8F8F2]/80">
-                    <CheckIcon className="w-5 h-5 text-[#BD93F9] shrink-0 mt-0.5" />
+                  <li key={i} className="flex items-start gap-3 surface-subtle">
+                    <CheckIcon className="w-5 h-5 text-dracula-purple shrink-0 mt-0.5" />
                     {f}
                   </li>
                 ))}
@@ -168,22 +298,22 @@ export function PreviewModal() {
 
             {ghContent?.mockDemo && (
               <div className="mb-6">
-                <div className="bg-[#44475A] rounded-xl p-4 border border-[#6272A4]">
+                <div className="bg-dracula-selection rounded-xl p-4 border border-dracula-comment">
                   <div className="flex items-start gap-3 relative z-10">
                     <img src={hfLogo} alt="" className="w-10 h-10 rounded-full mt-1" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-[#F8F8F2] font-medium text-sm">{ghContent.mockDemo.user}</span>
+                        <span className="text-dracula-foreground font-medium text-sm">{ghContent.mockDemo.user}</span>
                         {ghContent.mockDemo.userTag && (
-                          <span className="px-1.5 py-0.5 text-[10px] rounded bg-[#BD93F9]/30 text-[#BD93F9]">{ghContent.mockDemo.userTag}</span>
+                          <span className="badge badge-purple px-1.5 py-0.5 text-[10px]">{ghContent.mockDemo.userTag}</span>
                         )}
-                        <span className="text-[#6272A4] text-xs">· {timeAgo}</span>
+                        <span className="text-dracula-comment text-xs">· {timeAgo}</span>
                       </div>
                       {ghContent.mockDemo.title && (
-                        <div className="text-[#F8F8F2] font-medium text-sm mb-2">{ghContent.mockDemo.title}</div>
+                        <div className="text-dracula-foreground font-medium text-sm mb-2">{ghContent.mockDemo.title}</div>
                       )}
                       {ghContent.mockDemo.body && (
-                        <div className="text-[#F8F8F2] text-sm whitespace-pre-wrap leading-relaxed mb-2">{ghContent.mockDemo.body}</div>
+                        <div className="text-dracula-foreground text-sm whitespace-pre-wrap leading-relaxed mb-2">{ghContent.mockDemo.body}</div>
                       )}
                       {ghContent.mockDemo.modelLinks && (
                         <div className="space-y-1 mb-3">
@@ -195,15 +325,15 @@ export function PreviewModal() {
                                   href={`https://huggingface.co/${model.name}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-xs text-[#BD93F9] hover:underline font-mono"
+                                  className="text-xs text-dracula-purple hover:underline font-mono"
                                 >
                                   {model.name}
                                 </a>
-                                <span className="text-xs text-[#6272A4]">
+                                <span className="text-xs text-dracula-comment">
                                   <AnimatedNumber value={stats?.downloads || model.downloads} /> downloads
                                 </span>
-                                <span className="text-[#6272A4]">·</span>
-                                <span className="text-xs text-[#6272A4]">
+                                <span className="text-dracula-comment">·</span>
+                                <span className="text-xs text-dracula-comment">
                                   <AnimatedNumber value={stats?.likes || model.hearts} /> ❤️
                                 </span>
                               </div>
@@ -212,7 +342,7 @@ export function PreviewModal() {
                         </div>
                       )}
                       {ghContent.mockDemo.codeBlock && (
-                        <div className="bg-[#0a0e10] rounded-lg p-3 mb-3 font-mono text-xs text-[#8BE9FD] border border-[#8BE9FD]/30 whitespace-pre-wrap">
+                        <div className="code-panel mb-3">
                           {ghContent.mockDemo.codeBlock}
                         </div>
                       )}
@@ -225,8 +355,8 @@ export function PreviewModal() {
                               <button
                                 key={i}
                                 onClick={() => setActiveReactions(prev => { const next = new Set(prev); isActive ? next.delete(reaction.emoji) : next.add(reaction.emoji); return next; })}
-                                className={`flex items-center gap-1 px-2 py-1 rounded-full text-sm border transition-all ${
-                                  isActive ? 'bg-[#8BE9FD]/30 border-[#8BE9FD] text-[#8BE9FD]' : 'bg-transparent border-[#6272A4] text-[#6272A4] hover:border-[#F8F8F2]'
+                                className={`reaction-pill ${
+                                  isActive ? 'reaction-pill-active' : 'reaction-pill-inactive'
                                 }`}
                               >
                                 <span>{reaction.emoji}</span>
@@ -243,7 +373,7 @@ export function PreviewModal() {
             )}
 
             <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-gradient-to-r from-[#BD93F9] to-[#FF79C6] hover:opacity-90 text-[#282A36] font-semibold rounded-xl transition-all shadow-lg shadow-[#BD93F9]/25">
+              className="button-primary button-primary-purple w-full rounded-xl shadow-lg shadow-dracula-purple/25">
               <GitHubIcon className="w-5 h-5" /> View on GitHub
             </a>
           </div>
@@ -264,7 +394,7 @@ export function PreviewModal() {
     const embedUrl = `https://www.youtube.com/embed/${videoId}`;
 
     return (
-      <div ref={overlayRef} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
+      <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
         <div className="relative w-full max-w-5xl h-full flex items-center justify-center">
           <iframe
             src={embedUrl}
@@ -283,50 +413,50 @@ export function PreviewModal() {
     const pdfUrl = `https://arxiv.org/pdf/${slug}`;
     
     return (
-      <div ref={overlayRef} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
-        <div className="bg-[#282A36] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-[#FFB86C]/30 flex flex-col">
-          <div className="p-6 border-b border-[#343746]">
+      <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
+        <div className="modal-surface modal-surface-paper flex">
+          <div className="p-6 modal-header-divider">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center shrink-0">
+                <div className="logo-badge w-14 h-14 rounded-xl">
                   <ArxivIcon className="w-9 h-9" />
                 </div>
                 <div>
                   <div className="flex flex-wrap gap-2 mb-2">
-                    <span className="px-2 py-0.5 text-xs rounded-full bg-[#FFB86C]/20 text-[#FFB86C] border border-[#FFB86C]/30">arXiv Paper</span>
+                    <span className="badge badge-orange">arXiv Paper</span>
                     {content?.subjects?.slice(0, 2).map(subj => (
-                      <span key={subj} className="px-2 py-0.5 text-xs rounded-full bg-[#F1FA8C]/20 text-[#F1FA8C] border border-[#F1FA8C]/30">{subj}</span>
+                      <span key={subj} className="badge badge-yellow">{subj}</span>
                     ))}
                   </div>
-                  <h2 className="text-xl font-bold text-[#F8F8F2] leading-tight">{previewCard.title}</h2>
+                  <h2 className="surface-title text-xl leading-tight">{previewCard.title}</h2>
                 </div>
               </div>
-              <button onClick={closePreview} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+              <button onClick={closePreview} className="close-button">&times;</button>
             </div>
             
             {content?.authors && (
               <div className="mb-3">
-                <p className="text-sm text-[#6272A4]">
-                  <span className="text-[#FFB86C] font-medium">{content.authors.join(', ')}</span>
+                <p className="text-sm text-dracula-comment">
+                  <span className="text-dracula-orange font-medium">{content.authors.join(', ')}</span>
                 </p>
               </div>
             )}
             
-            <div className="flex items-center gap-4 text-xs text-[#6272A4] mb-4">
+            <div className="flex items-center gap-4 text-xs text-dracula-comment mb-4">
               {content?.published && <span>{content.published}</span>}
-              <span className="font-mono text-[#FFB86C]">arXiv:{slug}</span>
+              <span className="font-mono text-dracula-orange">arXiv:{slug}</span>
             </div>
             
-            {content?.hook && <p className="text-[#F8F8F2]/80 leading-relaxed text-sm mb-4">{content.hook}</p>}
+            {content?.hook && <p className="surface-subtle leading-relaxed text-sm mb-4">{content.hook}</p>}
             
             <div className="flex gap-3">
               <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#282A36] bg-gradient-to-r from-[#FFB86C] to-[#F1FA8C] rounded-lg hover:opacity-90 transition-opacity">
+                className="button-primary button-primary-orange">
                 <ExternalLinkIcon className="w-4 h-4" /> View on arXiv
               </a>
               <a href={pdfUrl} target="_blank" rel="noopener noreferrer"
                 download={`${slug}.pdf`}
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#FFB86C] bg-[#FFB86C]/10 border border-[#FFB86C]/30 rounded-lg hover:bg-[#FFB86C]/20 transition-colors">
+                className="button-secondary-orange">
                 Open PDF
               </a>
             </div>
@@ -346,33 +476,33 @@ export function PreviewModal() {
 
   if (isPaper) {
     return (
-      <div ref={overlayRef} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
-        <div className="bg-[#282A36] rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-[#FFB86C]/30 flex flex-col">
-          <div className="p-6 border-b border-[#343746]">
+      <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
+        <div className="modal-surface modal-surface-paper flex">
+          <div className="p-6 modal-header-divider">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-xl bg-white flex items-center justify-center shrink-0">
+                <div className="logo-badge w-14 h-14 rounded-xl">
                   <PaperIcon className="w-9 h-9" />
                 </div>
                 <div>
                   <div className="flex flex-wrap gap-2 mb-2">
-                    <span className="px-2 py-0.5 text-xs rounded-full bg-[#FFB86C]/20 text-[#FFB86C] border border-[#FFB86C]/30">Paper</span>
+                    <span className="badge badge-orange">Paper</span>
                   </div>
-                  <h2 className="text-xl font-bold text-[#F8F8F2] leading-tight">{previewCard.title}</h2>
+                  <h2 className="surface-title text-xl leading-tight">{previewCard.title}</h2>
                 </div>
               </div>
-              <button onClick={closePreview} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+              <button onClick={closePreview} className="close-button">&times;</button>
             </div>
             
-            <div className="flex items-center gap-4 text-xs text-[#6272A4] mb-4">
-              <span className="font-mono text-[#FFB86C]">{previewCard.description}</span>
+            <div className="flex items-center gap-4 text-xs text-dracula-comment mb-4">
+              <span className="font-mono text-dracula-orange">{previewCard.description}</span>
             </div>
 
             {paperDetails?.abstract && (
               <div className="mb-6 space-y-4">
-                <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-[#F1FA8C]">Abstract</h3>
+                <h3 className="text-sm font-semibold uppercase tracking-[0.12em] text-dracula-yellow">Abstract</h3>
                 {paperDetails.abstract.map((paragraph, index) => (
-                  <p key={index} className="text-sm leading-relaxed text-[#F8F8F2]/80">
+                  <p key={index} className="text-sm leading-relaxed surface-subtle">
                     {paragraph}
                   </p>
                 ))}
@@ -381,7 +511,7 @@ export function PreviewModal() {
             
             <div className="flex gap-3">
               <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#282A36] bg-gradient-to-r from-[#FFB86C] to-[#F1FA8C] rounded-lg hover:opacity-90 transition-opacity">
+                className="button-primary button-primary-orange">
                 <ExternalLinkIcon className="w-4 h-4" /> View Paper
               </a>
             </div>
@@ -393,17 +523,17 @@ export function PreviewModal() {
 
   if (isAward) {
     return (
-      <div ref={overlayRef} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
-        <div className="bg-[#282A36] rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden border border-[#FFD21E]/30">
+      <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
+        <div className="modal-surface modal-surface-award">
           {content?.image && (
-            <div className="relative h-64 border-b border-[#343746]">
+            <div className="relative h-64 modal-header-divider">
               <img src={content.image} alt={content.imageAlt || previewCard.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#282A36] via-[#282A36]/30 to-transparent" />
+              <div className="media-fade-bottom-soft" />
               <div className="absolute top-5 left-5 flex items-center gap-3">
-                <div className="w-14 h-14 rounded-2xl bg-[#FFD21E]/15 backdrop-blur-sm border border-[#FFD21E]/30 flex items-center justify-center text-[#FFD21E]">
+                <div className="icon-panel icon-panel-yellow w-14 h-14 rounded-2xl">
                   <AwardIcon className="w-7 h-7" />
                 </div>
-                <span className="px-3 py-1 text-sm rounded-full bg-[#FFD21E]/15 text-[#FFD21E] border border-[#FFD21E]/30">Engineering Award</span>
+                <span className="badge badge-yellow px-3 py-1 text-sm">Engineering Award</span>
               </div>
             </div>
           )}
@@ -412,29 +542,29 @@ export function PreviewModal() {
             <div className="flex items-start justify-between gap-4 mb-5">
               <div>
                 <div className="flex flex-wrap gap-2 mb-2">
-                  <span className="px-2 py-0.5 text-xs rounded-full bg-[#FFD21E]/15 text-[#FFD21E] border border-[#FFD21E]/30">{content?.sourceLabel || 'Award'}</span>
+                  <span className="badge badge-yellow">{content?.sourceLabel || 'Award'}</span>
                   {content?.published && (
-                    <span className="px-2 py-0.5 text-xs rounded-full bg-[#8BE9FD]/20 text-[#8BE9FD] border border-[#8BE9FD]/30">{content.published}</span>
+                    <span className="badge badge-cyan">{content.published}</span>
                   )}
                 </div>
-                <h2 className="text-2xl font-bold text-[#F8F8F2] leading-tight">{previewCard.title}</h2>
+                <h2 className="surface-title text-2xl leading-tight">{previewCard.title}</h2>
               </div>
-              <button onClick={closePreview} className="text-gray-400 hover:text-white text-2xl">&times;</button>
+              <button onClick={closePreview} className="close-button">&times;</button>
             </div>
 
-            {content?.hook && <p className="text-[#F8F8F2]/85 leading-relaxed mb-5 text-lg">{content.hook}</p>}
+            {content?.hook && <p className="surface-strong-subtle leading-relaxed mb-5 text-lg">{content.hook}</p>}
 
             {content?.quote && (
-              <blockquote className="border-l-4 border-[#FFD21E] pl-4 py-2 mb-6 bg-[#FFD21E]/10 rounded-r-lg">
-                <p className="text-[#F8F8F2] italic leading-relaxed">{content.quote}</p>
+              <blockquote className="quote-panel-yellow mb-6">
+                <p className="text-dracula-foreground italic leading-relaxed">{content.quote}</p>
               </blockquote>
             )}
 
             {content?.keyPoints && (
               <ul className="space-y-2 mb-6">
                 {content.keyPoints.map((point, i) => (
-                  <li key={i} className="flex items-start gap-3 text-[#F8F8F2]/80">
-                    <CheckIcon className="w-5 h-5 text-[#FFD21E] shrink-0 mt-0.5" />
+                  <li key={i} className="flex items-start gap-3 surface-subtle">
+                    <CheckIcon className="w-5 h-5 text-dracula-yellow shrink-0 mt-0.5" />
                     {point}
                   </li>
                 ))}
@@ -442,7 +572,7 @@ export function PreviewModal() {
             )}
 
             <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-[#282A36] bg-gradient-to-r from-[#FFD21E] to-[#F1FA8C] rounded-lg hover:opacity-90 transition-opacity">
+              className="button-primary button-primary-yellow">
               <ExternalLinkIcon className="w-4 h-4" /> {content?.ctaLabel || 'Read more'}
             </a>
           </div>
@@ -451,45 +581,58 @@ export function PreviewModal() {
     );
   }
 
+  const articleBadgeLabel = isDeepDive ? 'Deep Dive' : isCaseStudy ? 'Case Study' : 'Blog Post';
+  const articleBadgeClass = isDeepDive ? 'badge badge-purple' : isCaseStudy ? 'badge badge-orange' : 'badge badge-cyan';
+  const articleModalClass = isDeepDive ? 'modal-surface modal-surface-deep-dive' : isCaseStudy ? 'modal-surface modal-surface-case-study' : 'modal-surface modal-surface-blog';
+  const articleActionClass = isCaseStudy ? 'button-secondary-orange shrink-0' : 'button-secondary-yellow shrink-0';
+  const articleQuoteClass = isDeepDive ? 'quote-panel-purple mb-6' : isCaseStudy ? 'quote-panel-yellow mb-6' : 'quote-panel-purple mb-6';
+  const articleQuoteTextClass = isDeepDive ? 'text-dracula-purple font-medium italic text-lg' : isCaseStudy ? 'text-dracula-yellow font-medium italic text-lg' : 'text-dracula-purple font-medium italic text-lg';
+  const articleCheckIconClass = isDeepDive ? 'w-5 h-5 text-dracula-purple shrink-0 mt-0.5' : isCaseStudy ? 'w-5 h-5 text-dracula-orange shrink-0 mt-0.5' : 'w-5 h-5 text-dracula-green shrink-0 mt-0.5';
+  const showArticleAction = !isDeepDive;
+
   return (
-    <div ref={overlayRef} className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={handleOverlayClick}>
-      <div className="bg-[#282A36] rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-[#8BE9FD]/30">
+    <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
+      <div className={articleModalClass}>
         <div className="p-6">
           <div className="flex items-start justify-between gap-4 mb-6">
             <div>
               <div className="flex flex-wrap gap-2 mb-2">
-                <span className="px-2 py-0.5 text-xs rounded-full bg-[#8BE9FD]/20 text-[#8BE9FD] border border-[#8BE9FD]/30">Blog Post</span>
+                <span className={articleBadgeClass}>{articleBadgeLabel}</span>
                 {content?.tags.map(tag => (
-                  <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-[#FFB86C]/20 text-[#FFB86C] border border-[#FFB86C]/30">{tag}</span>
+                  <span key={tag} className="badge badge-orange">{tag}</span>
                 ))}
               </div>
-              <h2 className="text-2xl font-bold text-[#F8F8F2] leading-tight">{previewCard.title}</h2>
+              <h2 className="surface-title text-2xl leading-tight">{previewCard.title}</h2>
             </div>
-            <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
-              className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#FFD21E] bg-[#FFD21E]/10 border border-[#FFD21E]/30 rounded-lg hover:bg-[#FFD21E]/20 transition-colors">
-              <ExternalLinkIcon /> {content?.ctaLabel || 'Open on HF'}
-            </a>
+            {showArticleAction && (
+              <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
+                className={articleActionClass}>
+                <ExternalLinkIcon /> {content?.ctaLabel || 'Open on HF'}
+              </a>
+            )}
           </div>
 
           {content?.image && (
-            <div className="mb-6 rounded-xl overflow-hidden border border-[#343746]">
+            <div className="mb-6 rounded-xl overflow-hidden border border-dracula-bg-light">
               <img src={content.image} alt={content.imageAlt || previewCard.title} className="w-full" />
             </div>
           )}
 
-          {content?.hook && <p className="text-[#F8F8F2]/80 leading-relaxed mb-4 text-lg">{content.hook}</p>}
+          {content?.hook && <p className="surface-subtle leading-relaxed mb-4 text-lg">{content.hook}</p>}
 
           {content?.quote && (
-            <blockquote className="border-l-4 border-[#BD93F9] pl-4 py-2 mb-6 bg-[#BD93F9]/10 rounded-r-lg">
-              <p className="text-[#BD93F9] font-medium italic text-lg">{content.quote}</p>
+            <blockquote className={articleQuoteClass}>
+              <p className={articleQuoteTextClass}>{content.quote}</p>
             </blockquote>
           )}
+
+          {isDeepDive && <TransformerPruningExplorer />}
 
           {content?.keyPoints && (
             <ul className="space-y-2 mb-6">
               {content.keyPoints.map((point, i) => (
-                <li key={i} className="flex items-start gap-3 text-[#F8F8F2]/80">
-                  <CheckIcon className="w-5 h-5 text-[#50FA7B] shrink-0 mt-0.5" />
+                <li key={i} className="flex items-start gap-3 surface-subtle">
+                  <CheckIcon className={articleCheckIconClass} />
                   {point}
                 </li>
               ))}

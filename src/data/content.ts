@@ -8,7 +8,7 @@ export const articleContent: Record<string, {
   authors?: string[];
   subjects?: string[];
   published?: string;
-  kind?: 'blog' | 'award';
+  kind?: 'blog' | 'award' | 'case-study' | 'deep-dive';
   sourceLabel?: string;
   ctaLabel?: string;
 }> = {
@@ -73,6 +73,39 @@ export const articleContent: Record<string, {
       'Highlighted as a role model for women in AI and engineering',
       'Cited for leadership, strategic thinking, and industry impact',
     ],
+  },
+  'optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin': {
+    kind: 'case-study',
+    hook: 'Embedl optimized a Vision Transformer for NVIDIA Jetson AGX Orin using TensorRT, integer quantization, and structured pruning, delivering a 4x speedup with more than 2x lower energy per inference.',
+    tags: ['Vision Transformers', 'Jetson', 'Optimization'],
+    image: 'https://www.embedl.com/hubfs/Vision%20Transformers-min.png',
+    imageAlt: 'Vision Transformer case study for NVIDIA Jetson AGX Orin',
+    sourceLabel: 'Embedl',
+    ctaLabel: 'Open case study',
+    keyPoints: [
+      '4x end-to-end inference speedup on NVIDIA Jetson AGX Orin',
+      'More than 2x lower energy per inference for edge deployment',
+      'Low-bit integer quantization with critical structures kept in floating point',
+      'Structured pruning tuned for Orin hardware characteristics',
+      'Less than 1% accuracy drop after optimization',
+    ],
+    quote: 'We achieved a 4x speedup and over 2x less energy per inference with less than 1% accuracy drop.',
+  },
+  'how-to-prune-attention': {
+    kind: 'deep-dive',
+    hook: 'Attention pruning is about removing structured capacity from the attention block without collapsing the tensor layout that hardware and compilers expect. The main levers are heads, channels per head, and the shared embedding width.',
+    tags: ['Attention', 'Pruning', 'Vision Transformers', 'Research'],
+    image: 'https://www.embedl.com/hubfs/Vision%20Transformers-min.png',
+    imageAlt: 'Attention pruning deep dive for Vision Transformers',
+    sourceLabel: 'Research Deep Dive',
+    keyPoints: [
+      'Head pruning removes entire attention branches and is the cleanest structured change',
+      'Channel pruning keeps all heads but reduces width in the query, key, and value projections',
+      'Embedding-width pruning shrinks the shared representation that all heads draw from',
+      'Structured pruning is easier to accelerate than unstructured sparsity on real hardware',
+      'Each pruning axis has different accuracy and deployment tradeoffs',
+    ],
+    quote: 'Good attention pruning removes structure the model is not using while preserving structure the compiler can still optimize.',
   },
 };
 

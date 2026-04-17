@@ -7,7 +7,7 @@ export interface CardData {
   description: string;
   type: 'article' | 'demo';
   link: string;
-  cardType?: 'article' | 'award' | 'github' | 'arxiv' | 'paper' | 'space' | 'youtube';
+  cardType?: 'article' | 'award' | 'github' | 'arxiv' | 'paper' | 'space' | 'youtube' | 'case-study' | 'deep-dive';
 }
 
 export interface Viewport {
@@ -124,6 +124,27 @@ export const DEFAULT_CARDS: CardData[] = [
     description: 'Benchmark report for optimizing Cosmos-Reason2 on Jetson Orin Nano. From OOM to running with near-zero accuracy loss using mixed-precision quantization.',
     type: 'article',
     link: 'https://huggingface.co/blog/JonnaMat/cosmos-reason2-report',
+  },
+  {
+    id: 'c21',
+    x: 540,
+    y: 260,
+    zIndex: 1,
+    title: 'Optimizing Vision Transformers for Peak Performance on NVIDIA Jetson AGX Orin',
+    description: 'Embedl case study on Jetson AGX Orin optimization for Vision Transformers.',
+    type: 'article',
+    link: 'https://www.embedl.com/optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin',
+    cardType: 'case-study',
+  },
+  {
+    id: 'c22',
+    x: 780,
+    y: 230,
+    zIndex: 1,
+    title: 'How to Prune Attention',
+    description: 'Research explainer on pruning attention heads, channels per head, and embedding width.',
+    type: 'article',
+    cardType: 'deep-dive',
   },
 {
     id: 'c16',
