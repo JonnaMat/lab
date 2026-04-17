@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useCanvasStore } from '../store/canvasStore';
 import { articleContent, githubContent, paperContent, getSlug, getRepo } from '../data/content';
 import { loadCard, parseMarkdown } from '../data/cards/loader';
-import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon, AwardIcon, PaperIcon } from './Icons';
+import { GitHubIcon, ExternalLinkIcon, CheckIcon, ArxivIcon, PaperIcon } from './Icons';
 import hfLogo from '../assets/hf-logo.svg';
 
 interface GitHubStats {
@@ -223,10 +223,10 @@ export function PreviewModal() {
 
   const isGitHub = previewCard?.cardType === 'github';
   const isArxiv = previewCard?.cardType === 'arxiv';
-  const isAward = previewCard?.cardType === 'award';
   const isPaper = previewCard?.cardType === 'paper';
   const isYoutube = previewCard?.cardType === 'youtube';
-const repo = previewCard?.link ? getRepo(previewCard.link) : null;
+
+  const repo = previewCard?.link ? getRepo(previewCard.link) : null;
   const slug = previewCard?.link?.split('/').pop() || '';
   const ghSlug = previewCard?.link ? getSlug(previewCard.link) : '';
   
@@ -236,6 +236,7 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
   const hasMarkdownContent = markdownSlugs.includes(slug);
 
   const content = hasMarkdownContent ? (markdownContent?.frontmatter as typeof articleContent[string] | undefined) : articleContent[slug];
+  const related = (hasMarkdownContent ? (markdownContent?.frontmatter.related || []) : content?.related || []).filter(r => !r.includes('youtube'));
   const isCaseStudy = previewCard?.cardType === 'case-study' || content?.kind === 'case-study';
 
   useEffect(() => {
@@ -315,7 +316,7 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
     return (
       <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
         <div className="modal-surface modal-surface-github">
-          <div className="p-6">
+          <div className="p-6 modal-scrollable">
             <div className="flex items-center gap-4 mb-6">
               <div className="hero-gradient-github w-16 h-16 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-dracula-purple/30">
                 <GitHubIcon className="w-9 h-9 text-dracula-bg" />
@@ -337,7 +338,7 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
             {ghContent?.description && <p className="surface-subtle text-lg leading-relaxed mb-6">{ghContent.description}</p>}
 
             {ghContent?.features && (
-              <ul className="space-y-2 mb-6">
+              <ul className="space-y-2 mb-4">
                 {ghContent.features.map((f, i) => (
                   <li key={i} className="flex items-start gap-3 surface-subtle">
                     <CheckIcon className="w-5 h-5 text-dracula-purple shrink-0 mt-0.5" />
@@ -345,6 +346,15 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
                   </li>
                 ))}
               </ul>
+            )}
+
+            {ghContent?.installCommand && (
+              <div className="mb-6">
+                <div className="code-panel">
+                  <span className="text-dracula-comment text-xs mr-2">$</span>
+                  {ghContent.installCommand}
+                </div>
+              </div>
             )}
 
             {ghContent?.mockDemo && (
@@ -423,6 +433,41 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
               </div>
             )}
 
+            {ghContent?.related && ghContent.related.length > 0 && (
+              <div className="border-t border-dracula-bg-light pt-4 mt-4 mb-4">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-dracula-comment mb-3">Further Reading</h4>
+                <div className="flex flex-wrap gap-2">
+                  {ghContent.related.slice(0, 3).map((relatedSlug) => {
+                    const relatedCard = useCanvasStore.getState().cards.find(c => c.link === relatedSlug);
+                    if (relatedCard) {
+                      return (
+                        <button
+                          key={relatedSlug}
+                          onClick={() => useCanvasStore.getState().navigateToCard(relatedCard.id)}
+                          className="text-sm px-3 py-1.5 rounded-lg bg-dracula-bg-light hover:bg-dracula-selection text-dracula-cyan hover:text-dracula-cyan transition-colors"
+                        >
+                          {relatedCard.title}
+                        </button>
+                      );
+                    } else if (relatedSlug.includes('://')) {
+                      return (
+                        <a
+                          key={relatedSlug}
+                          href={relatedSlug}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm px-3 py-1.5 rounded-lg bg-dracula-bg-light hover:bg-dracula-selection text-dracula-orange hover:text-dracula-orange transition-colors"
+                        >
+                          {relatedSlug.split('/').pop() || 'Link'}
+                        </a>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              </div>
+            )}
+
             <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
               className="button-primary button-primary-purple w-full rounded-xl shadow-lg shadow-dracula-purple/25">
               <GitHubIcon className="w-5 h-5" /> View on GitHub
@@ -466,7 +511,7 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
     return (
       <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
         <div className="modal-surface modal-surface-paper flex">
-          <div className="p-6 modal-header-divider">
+          <div className="p-6 modal-header-divider modal-scrollable-paper">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex items-center gap-4">
                 <div className="logo-badge w-14 h-14 rounded-xl">
@@ -511,6 +556,41 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
                 Open PDF
               </a>
             </div>
+
+            {content?.related && content.related.length > 0 && (
+              <div className="border-t border-dracula-bg-light pt-4 mt-4">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-dracula-comment mb-3">Further Reading</h4>
+                <div className="flex flex-wrap gap-2">
+                  {content.related.slice(0, 3).map((relatedSlug) => {
+                    const relatedCard = useCanvasStore.getState().cards.find(c => c.link === relatedSlug);
+                    if (relatedCard) {
+                      return (
+                        <button
+                          key={relatedSlug}
+                          onClick={() => useCanvasStore.getState().navigateToCard(relatedCard.id)}
+                          className="text-sm px-3 py-1.5 rounded-lg bg-dracula-bg-light hover:bg-dracula-selection text-dracula-cyan hover:text-dracula-cyan transition-colors"
+                        >
+                          {relatedCard.title}
+                        </button>
+                      );
+                    } else if (relatedSlug.includes('://')) {
+                      return (
+                        <a
+                          key={relatedSlug}
+                          href={relatedSlug}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm px-3 py-1.5 rounded-lg bg-dracula-bg-light hover:bg-dracula-selection text-dracula-orange hover:text-dracula-orange transition-colors"
+                        >
+                          {relatedSlug.split('/').pop() || 'Link'}
+                        </a>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="flex-1 overflow-hidden">
@@ -529,7 +609,7 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
     return (
       <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
         <div className="modal-surface modal-surface-paper flex">
-          <div className="p-6 modal-header-divider">
+          <div className="p-6 modal-header-divider modal-scrollable-paper">
             <div className="flex items-start justify-between gap-4 mb-4">
               <div className="flex items-center gap-4">
                 <div className="logo-badge w-14 h-14 rounded-xl">
@@ -559,92 +639,27 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
                 ))}
               </div>
             )}
-            
-            <div className="flex gap-3">
-              <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
-                className="button-primary button-primary-orange">
-                <ExternalLinkIcon className="w-4 h-4" /> View Paper
-              </a>
-            </div>
           </div>
         </div>
       </div>
     );
   }
 
-  if (isAward) {
-    return (
-      <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
-        <div className="modal-surface modal-surface-award">
-          {content?.image && (
-            <div className="relative h-64 modal-header-divider">
-              <img src={content.image} alt={content.imageAlt || previewCard.title} className="w-full h-full object-cover" />
-              <div className="media-fade-bottom-soft" />
-              <div className="absolute top-5 left-5 flex items-center gap-3">
-                <div className="icon-panel icon-panel-yellow w-14 h-14 rounded-2xl">
-                  <AwardIcon className="w-7 h-7" />
-                </div>
-                <span className="badge badge-yellow px-3 py-1 text-sm">Engineering Award</span>
-              </div>
-            </div>
-          )}
+  const isAward = content?.kind === 'award';
 
-          <div className="p-6">
-            <div className="flex items-start justify-between gap-4 mb-5">
-              <div>
-                <div className="flex flex-wrap gap-2 mb-2">
-                  <span className="badge badge-yellow">{content?.sourceLabel || 'Award'}</span>
-                  {content?.published && (
-                    <span className="badge badge-cyan">{content.published}</span>
-                  )}
-                </div>
-                <h2 className="surface-title text-2xl leading-tight">{previewCard.title}</h2>
-              </div>
-              <button onClick={closePreview} className="close-button">&times;</button>
-            </div>
-
-            {content?.hook && <p className="surface-strong-subtle leading-relaxed mb-5 text-lg">{content.hook}</p>}
-
-            {content?.quote && (
-              <blockquote className="quote-panel-yellow mb-6">
-                <p className="text-dracula-foreground italic leading-relaxed">{content.quote}</p>
-              </blockquote>
-            )}
-
-            {content?.keyPoints && (
-              <ul className="space-y-2 mb-6">
-                {content.keyPoints.map((point, i) => (
-                  <li key={i} className="flex items-start gap-3 surface-subtle">
-                    <CheckIcon className="w-5 h-5 text-dracula-yellow shrink-0 mt-0.5" />
-                    {point}
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
-              className="button-primary button-primary-yellow">
-              <ExternalLinkIcon className="w-4 h-4" /> {content?.ctaLabel || 'Read more'}
-            </a>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const articleBadgeLabel = isDeepDive ? 'Deep Dive' : isCaseStudy ? 'Case Study' : 'Blog Post';
-  const articleBadgeClass = isDeepDive ? 'badge badge-purple' : isCaseStudy ? 'badge badge-orange' : 'badge badge-cyan';
-  const articleModalClass = isDeepDive ? 'modal-surface modal-surface-deep-dive' : isCaseStudy ? 'modal-surface modal-surface-case-study' : 'modal-surface modal-surface-blog';
-  const articleActionClass = isCaseStudy ? 'button-secondary-orange shrink-0' : 'button-secondary-yellow shrink-0';
-  const articleQuoteClass = isDeepDive ? 'quote-panel-purple mb-6' : isCaseStudy ? 'quote-panel-yellow mb-6' : 'quote-panel-purple mb-6';
-  const articleQuoteTextClass = isDeepDive ? 'text-dracula-purple font-medium italic text-lg' : isCaseStudy ? 'text-dracula-yellow font-medium italic text-lg' : 'text-dracula-purple font-medium italic text-lg';
-  const articleCheckIconClass = isDeepDive ? 'w-5 h-5 text-dracula-purple shrink-0 mt-0.5' : isCaseStudy ? 'w-5 h-5 text-dracula-orange shrink-0 mt-0.5' : 'w-5 h-5 text-dracula-green shrink-0 mt-0.5';
-  const showArticleAction = !isDeepDive;
+  const articleBadgeLabel = isDeepDive ? 'Deep Dive' : isCaseStudy ? 'Case Study' : isAward ? 'Award' : 'Blog Post';
+  const articleBadgeClass = isDeepDive ? 'badge badge-purple' : isCaseStudy ? 'badge badge-orange' : isAward ? 'badge badge-yellow' : 'badge badge-cyan';
+  const articleModalClass = isDeepDive ? 'modal-surface modal-surface-deep-dive' : isCaseStudy ? 'modal-surface modal-surface-case-study' : isAward ? 'modal-surface modal-surface-award' : 'modal-surface modal-surface-blog';
+  const articleActionClass = isCaseStudy ? 'button-secondary-orange shrink-0' : isAward ? 'button-secondary-yellow shrink-0' : 'button-secondary-yellow shrink-0';
+  const articleQuoteClass = isDeepDive ? 'quote-panel-purple mb-6' : isCaseStudy ? 'quote-panel-yellow mb-6' : isAward ? 'quote-panel-yellow mb-6' : 'quote-panel-purple mb-6';
+  const articleQuoteTextClass = isDeepDive ? 'text-dracula-purple font-medium italic text-lg' : isCaseStudy ? 'text-dracula-yellow font-medium italic text-lg' : isAward ? 'text-dracula-yellow font-medium italic text-lg' : 'text-dracula-purple font-medium italic text-lg';
+  const articleCheckIconClass = isDeepDive ? 'w-5 h-5 text-dracula-purple shrink-0 mt-0.5' : isCaseStudy ? 'w-5 h-5 text-dracula-orange shrink-0 mt-0.5' : isAward ? 'w-5 h-5 text-dracula-yellow shrink-0 mt-0.5' : 'w-5 h-5 text-dracula-green shrink-0 mt-0.5';
+  const showArticleAction = !isDeepDive && (hasMarkdownContent ? (markdownContent?.frontmatter as unknown as { link?: string })?.link : previewCard?.link?.includes('://'));
 
   return (
     <div ref={overlayRef} className="modal-overlay" onClick={handleOverlayClick}>
       <div className={articleModalClass}>
-        <div className="p-6">
+        <div className="p-6 modal-scrollable">
           <div className="flex items-start justify-between gap-4 mb-6">
             <div>
               <div className="flex flex-wrap gap-2 mb-2">
@@ -656,7 +671,7 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
               <h2 className="surface-title text-2xl leading-tight">{previewCard.title}</h2>
             </div>
             {showArticleAction && (
-              <a href={previewCard.link} target="_blank" rel="noopener noreferrer"
+              <a href={hasMarkdownContent ? (markdownContent?.frontmatter as unknown as { link?: string })?.link || previewCard?.link : previewCard?.link} target="_blank" rel="noopener noreferrer"
                 className={articleActionClass}>
                 <ExternalLinkIcon /> {content?.ctaLabel || 'Open on HF'}
               </a>
@@ -721,6 +736,41 @@ const repo = previewCard?.link ? getRepo(previewCard.link) : null;
                 </li>
               ))}
             </ul>
+          )}
+
+          {related.length > 0 && (
+            <div className="border-t border-dracula-bg-light pt-4 mt-4">
+              <h4 className="text-xs font-semibold uppercase tracking-wider text-dracula-comment mb-3">Further Reading</h4>
+              <div className="flex flex-wrap gap-2">
+                {related.slice(0, 3).map((relatedSlug) => {
+                  const relatedCard = useCanvasStore.getState().cards.find(c => c.link === relatedSlug);
+                  if (relatedCard) {
+                    return (
+                      <button
+                        key={relatedSlug}
+                        onClick={() => useCanvasStore.getState().navigateToCard(relatedCard.id)}
+                        className="text-sm px-3 py-1.5 rounded-lg bg-dracula-bg-light hover:bg-dracula-selection text-dracula-cyan hover:text-dracula-cyan transition-colors"
+                      >
+                        {relatedCard.title}
+                      </button>
+                    );
+                  } else if (relatedSlug.includes('://')) {
+                    return (
+                      <a
+                        key={relatedSlug}
+                        href={relatedSlug}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm px-3 py-1.5 rounded-lg bg-dracula-bg-light hover:bg-dracula-selection text-dracula-orange hover:text-dracula-orange transition-colors"
+                      >
+                        {relatedSlug.split('/').pop() || 'Link'}
+                      </a>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+            </div>
           )}
         </div>
       </div>

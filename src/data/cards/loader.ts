@@ -10,10 +10,12 @@ export interface CardFrontmatter {
   imageAlt?: string;
   quote?: string;
   hook?: string;
+  link?: string;
   kind: 'blog' | 'award' | 'case-study' | 'deep-dive';
   sourceLabel?: string;
   ctaLabel?: string;
   keyPoints?: string[];
+  related?: string[];
 }
 
 export interface CardContent {
@@ -45,17 +47,24 @@ export function loadCard(slug: string): CardContent | null {
       if (value.startsWith('"') && value.endsWith('"')) {
         frontmatter[key] = value.slice(1, -1);
       } else if (value.startsWith('[') && value.endsWith(']')) {
-        // Handle array format: - "item 1", - "item 2"
-        const items: string[] = [];
-        let remaining = value.slice(1, -1);
-        const dashMatch = remaining.match(/- "([^"]+)"/g);
-        if (dashMatch) {
-          dashMatch.forEach(m => {
-            const itemMatch = m.match(/- "([^"]+)"/);
-            if (itemMatch) items.push(itemMatch[1]);
-          });
+        // Handle array format: either inline ["item1", "item2"] or multiline
+        const inner = value.slice(1, -1).trim();
+        if (inner.startsWith('-')) {
+          // Multiline format with dashes
+          const items: string[] = [];
+          const dashMatch = inner.match(/- "([^"]+)"/g);
+          if (dashMatch) {
+            dashMatch.forEach(m => {
+              const itemMatch = m.match(/- "([^"]+)"/);
+              if (itemMatch) items.push(itemMatch[1]);
+            });
+          }
+          frontmatter[key] = items;
+        } else {
+          // Inline format ["item1", "item2"]
+          const items = inner.split(',').map(s => s.trim().replace(/^"|"$/g, ''));
+          frontmatter[key] = items;
         }
-        frontmatter[key] = items;
       } else {
         frontmatter[key] = value.trim();
       }

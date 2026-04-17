@@ -29,6 +29,9 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
   const hoverTimeout = useRef<number | null>(null);
   const { isDragging, hasMoved, handleMouseDown, currentPos } = useCardDrag(card.id);
   const bringToFront = useCanvasStore((s) => s.bringToFront);
+  const highlightedCardId = useCanvasStore((s) => s.highlightedCardId);
+  const isHighlighted = highlightedCardId === card.id;
+  const highlightClass = isHighlighted ? 'ring-2 ring-dracula-cyan ring-offset-2 ring-offset-dracula-bg' : '';
 
   const handleMouseEnter = () => {
     hoverTimeout.current = window.setTimeout(() => bringToFront(card.id), 150);
@@ -66,7 +69,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass}`}
+className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -98,7 +101,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-80 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass}`}
+        className={`${baseCardClass} w-80 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -127,7 +130,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`${elevatedCardClass} w-64 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass}`}
+        className={`${elevatedCardClass} w-64 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -156,7 +159,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-[28rem] group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass}`}
+        className={`${baseCardClass} w-[28rem] group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -209,7 +212,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-80 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass}`}
+        className={`${baseCardClass} w-80 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -240,7 +243,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-80 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass}`}
+        className={`${baseCardClass} w-80 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -281,7 +284,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-72 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass}`}
+        className={`${baseCardClass} w-72 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -327,7 +330,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-72 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass}`}
+        className={`${baseCardClass} w-72 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -373,7 +376,7 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
   return (
     <div
       data-card-id={card.id}
-      className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass}`}
+      className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
       style={style}
       onMouseDown={handleMouseDown}
       onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}

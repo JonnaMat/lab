@@ -134,7 +134,7 @@ export const DEFAULT_CARDS: CardData[] = [
     title: 'Cosmos-Reason2: On-Device Inference Report',
     description: 'Benchmark report for optimizing Cosmos-Reason2 on Jetson Orin Nano. From OOM to running with near-zero accuracy loss using mixed-precision quantization.',
     type: 'article',
-    link: 'cosmos-reason2-report',
+    link: 'https://huggingface.co/blog/JonnaMat/cosmos-reason2-report',
   },
   {
     id: 'c21',

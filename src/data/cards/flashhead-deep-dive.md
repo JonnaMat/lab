@@ -4,12 +4,13 @@ tags: ["FlashHead", "LLM Optimization", "Information Retrieval", "Hardware-Aware
 image: "https://raw.githubusercontent.com/embedl/flash-head/master/docs/flash_head_flow_diagram_dark.svg"
 imageAlt: "FlashHead two-stage retrieval flow diagram"
 kind: "deep-dive"
-hook: "FlashHead reframes token prediction as retrieval. How the classification head became a bottleneck for small models, and how we fixed it."
+hook: "How the classification head is a bottleneck for small models and how we fixed it."
 keyPoints:
   - "The LM classification head is a bottleneck for small models—it can't be quantized and vocab size often exceeds hidden dimension"
   - "Balanced clusters give consistent latency regardless of prompt, at the cost of some clustering quality"
   - "Selective quantization on the first matmul was an accidental discovery from a whiteboard discussion"
   - "Fixed 256 probes perform well—we tried dynamic but didn't see significant improvement"
+related: ["how-to-prune-attention", "cosmos-reason2-report"]
 ---
 
 # FlashHead: Research Notes
@@ -141,9 +142,3 @@ ended up being the right trade-offs, even if they’re not always *“optimal”
 - **1.75×** model-level speedup (Llama-3.2, Gemma-3, Qwen-3)
 - Training-free - drop-in replacement, no fine-tuning needed
 - Works with vLLM out of the box
-
-## Links
-
-- [Paper (arXiv)](https://arxiv.org/abs/2603.14591)
-- [GitHub](https://github.com/embedl/flash-head)
-- [HuggingFace Blog](https://huggingface.co/blog/JonnaMat/flashhead)

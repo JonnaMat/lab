@@ -12,6 +12,7 @@ keyPoints:
   - "Embedding-width pruning shrinks the shared representation that all heads draw from"
   - "Structured pruning is easier to accelerate than unstructured sparsity on real hardware"
   - "Each pruning axis has different accuracy and deployment tradeoffs"
+related: ["flashhead-deep-dive"]
 ---
 
 # How to Prune Attention

@@ -27,6 +27,7 @@ interface CanvasStore {
   maxZIndex: number;
   previewCard: CardData | null;
   annotations: ArrowAnnotation[];
+  highlightedCardId: string | null;
   loadFromCookie: () => void;
   saveToCookie: () => void;
   clearCookie: () => void;
@@ -39,6 +40,8 @@ interface CanvasStore {
   reset: () => void;
   openPreview: (card: CardData) => void;
   closePreview: () => void;
+  navigateToCard: (cardId: string) => void;
+  clearHighlight: () => void;
 }
 
 const DEFAULT_ANNOTATIONS: ArrowAnnotation[] = (rawAnnotations as RawArrowAnnotation[]).map((annotation) => ({
@@ -80,6 +83,7 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
   maxZIndex: 1,
   previewCard: null,
   annotations: DEFAULT_ANNOTATIONS,
+  highlightedCardId: null,
 
   loadFromCookie: () => {
     const savedCards = loadCardsFromCookie();
@@ -183,5 +187,42 @@ export const useCanvasStore = create<CanvasStore>((set, get) => ({
 
   closePreview: () => {
     set({ previewCard: null });
+  },
+
+  navigateToCard: (cardId: string) => {
+    const { cards, viewport, maxZIndex } = get();
+    const targetCard = cards.find((c) => c.id === cardId);
+    if (!targetCard) return;
+
+    const newMaxZ = Math.min(maxZIndex + 1, MAX_Z_INDEX);
+    
+    const screenCenterX = window.innerWidth / 2;
+    const screenCenterY = window.innerHeight / 2;
+    
+    const cardCenterX = targetCard.x + 150;
+    const cardCenterY = targetCard.y + 50;
+    
+    const newOffsetX = screenCenterX - cardCenterX * viewport.scale;
+    const newOffsetY = screenCenterY - cardCenterY * viewport.scale;
+
+    set({
+      previewCard: null,
+      highlightedCardId: cardId,
+      maxZIndex: newMaxZ,
+      cards: cards.map((c) => c.id === cardId ? { ...c, zIndex: newMaxZ } : c),
+      viewport: {
+        ...viewport,
+        offsetX: newOffsetX,
+        offsetY: newOffsetY,
+      },
+    });
+
+    setTimeout(() => {
+      get().clearHighlight();
+    }, 3000);
+  },
+
+  clearHighlight: () => {
+    set({ highlightedCardId: null });
   },
 }));

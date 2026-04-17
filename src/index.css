@@ -23,16 +23,16 @@
 
 @layer utilities {
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
   }
   ::-webkit-scrollbar-track {
     background: #21222C;
-    border-radius: 3px;
+    border-radius: 2px;
   }
   ::-webkit-scrollbar-thumb {
     background: #44475A;
-    border-radius: 3px;
+    border-radius: 2px;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #6272A4;
@@ -105,7 +105,7 @@ body {
   }
 
   .modal-surface-github {
-    @apply max-w-2xl border-dracula-purple/30;
+    @apply max-w-2xl max-h-[85vh] border-dracula-purple/30;
   }
 
   .modal-surface-paper {
@@ -113,19 +113,27 @@ body {
   }
 
   .modal-surface-award {
-    @apply max-w-3xl border-dracula-yellow/30;
+    @apply max-w-3xl max-h-[85vh] border-dracula-yellow/30;
   }
 
   .modal-surface-blog {
-    @apply max-w-2xl max-h-[85vh] border-dracula-cyan/30 overflow-y-auto;
+    @apply max-w-2xl max-h-[85vh] border-dracula-cyan/30;
   }
 
   .modal-surface-case-study {
-    @apply max-w-2xl max-h-[85vh] border-dracula-orange/30 overflow-y-auto;
+    @apply max-w-2xl max-h-[85vh] border-dracula-orange/30;
   }
 
   .modal-surface-deep-dive {
-    @apply max-w-2xl max-h-[85vh] border-dracula-purple/30 overflow-y-auto;
+    @apply max-w-2xl max-h-[85vh] border-dracula-purple/30;
+  }
+
+  .modal-scrollable {
+    @apply overflow-y-auto max-h-[85vh];
+  }
+
+  .modal-scrollable-paper {
+    @apply overflow-y-auto max-h-[90vh];
   }
 
   .modal-header-divider {
