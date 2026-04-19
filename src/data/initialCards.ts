@@ -1,3 +1,5 @@
+import crossEntropyLossImg from '../assets/cross-entropy-loss.png';
+
 export interface CardData {
   id: string;
   x: number;
@@ -199,7 +201,7 @@ export const DEFAULT_CARDS: CardData[] = [
     description:
       "Understanding the core loss function for classification - how wrong are my predictions compared to the ground truth?",
     type: "article",
-    image: "/assets/cross-entropy-loss.png",
+    image: crossEntropyLossImg,
     imageAlt: "Cross-entropy loss visualization",
     link: "cross-entropy-loss",
     cardType: "deep-dive",

@@ -3,7 +3,7 @@ title: "Cross-Entropy Loss"
 tags: ["Mathematics", "Foundations", "Loss Functions", "Machine Learning"]
 kind: "deep-dive"
 hook: "How wrong are my predictions compared to the ground truth? Understanding the core loss function for classification."
-image: "/assets/cross-entropy-loss.png"
+image: ""
 imageAlt: "Cross-entropy loss visualization"
 keyPoints:
   - "Cross-entropy measures the difference between predicted and true probability distributions"
