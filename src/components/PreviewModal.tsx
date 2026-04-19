@@ -1049,7 +1049,7 @@ export function PreviewModal() {
             </p>
           )}
 
-          {(content?.image || previewCard?.image) && (
+          {/* {(content?.image || previewCard?.image) && (
             <div className="mb-6 rounded-xl overflow-hidden border border-dracula-bg-light">
               <img
                 src={previewCard?.image || content?.image}
@@ -1057,7 +1057,7 @@ export function PreviewModal() {
                 className="w-full"
               />
             </div>
-          )}
+          )} */}
 
           {content?.quote && (
             <blockquote className={articleQuoteClass}>
