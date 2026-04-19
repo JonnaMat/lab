@@ -1,4 +1,6 @@
 import { marked } from 'marked';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 import flashheadDeepDive from './flashhead-deep-dive.md?raw';
 import howToPruneAttention from './how-to-prune-attention.md?raw';
 import cosmosReason2Report from './cosmos-reason2-report.md?raw';
@@ -81,6 +83,45 @@ export function loadCard(slug: string): CardContent | null {
   };
 }
 
+function processLatex(markdown: string): string {
+  let result = markdown;
+  
+  result = result.replace(/\\\[([\s\S]*?)\\\]/g, (_, tex) => {
+    try {
+      return katex.renderToString(tex.trim(), { displayMode: true, throwOnError: false });
+    } catch {
+      return `\\[${tex}\\]`;
+    }
+  });
+  
+  result = result.replace(/\$\$([^$]+)\$\$/g, (_, tex) => {
+    try {
+      return katex.renderToString(tex.trim(), { displayMode: true, throwOnError: false });
+    } catch {
+      return `$$${tex}$$`;
+    }
+  });
+  
+  result = result.replace(/\\\(([^)]+)\\\)/g, (_, tex) => {
+    try {
+      return katex.renderToString(tex.trim(), { displayMode: false, throwOnError: false });
+    } catch {
+      return `\\(${tex}\\)`;
+    }
+  });
+  
+  result = result.replace(/\$([^$\n]+)\$/g, (_, tex) => {
+    try {
+      return katex.renderToString(tex.trim(), { displayMode: false, throwOnError: false });
+    } catch {
+      return `$${tex}$`;
+    }
+  });
+  
+  return result;
+}
+
 export function parseMarkdown(markdown: string): string {
-  return marked.parse(markdown, { async: false }) as string;
+  const processed = processLatex(markdown);
+  return marked.parse(processed, { async: false }) as string;
 }

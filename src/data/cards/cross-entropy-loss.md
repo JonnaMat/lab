@@ -48,7 +48,7 @@ Properties:
 
 ## Cross-Entropy Loss
 
-Given the ground truth class index $i$, the cross-entropy loss is: 
+Given the ground truth class index \( i \), the cross-entropy loss is: 
 
 \[
  L = -log(p_i). \tag{2}
@@ -60,9 +60,9 @@ This measures how much probability mass the model assigns to the correct class.
 
 ### Why the negative logarithm? 
 
-- If the model is perfectly confident:  $ p_i = 1 \Rightarrow L = 0 $
+- If the model is perfectly confident:  \( p_i = 1 \Rightarrow L = 0 \)
 
-- If the model is completely wrong (confident): $ p_i \to 0 \Rightarrow L \to \infty $
+- If the model is completely wrong (confident): \( p_i \to 0 \Rightarrow L \to \infty \)
 
 Thus, cross-entropy strongly penalizes **confident wrong predictions**, which is crucial for stable learning.
 
@@ -167,11 +167,11 @@ def cross_entropy_loss(
 
 A key reason for the popularity of cross-entropy with softmax is its clean gradient.
 
-Let $p_j = softmax(z_j)$, then;](Let:
+Let \( p_j = softmax(z_j) \), then:
 
 \[
 p_j = \frac{e^{z_j}}{\sum_k e^{z_k}}
-\])
+\]
 
 and the loss:
 
@@ -219,7 +219,7 @@ or, more compactly in vector form:
 
 where \( y \) is the one-hot encoded ground truth vector.
 
-We used $log(a * b) = log(a) + log(b)$ and $deriv log(x) = 1/x * x'$ and $deriv e{x} = e{x}$
+We used \( \log(ab) = \log(a) + \log(b) \) and \( \frac{d}{dx}\log(x) = \frac{1}{x} \) and \( \frac{d}{dx}e^x = e^x \)
 
 We used the following identities:
 
