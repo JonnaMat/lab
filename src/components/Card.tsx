@@ -1,37 +1,72 @@
-import { useRef } from 'react';
-import { CardData } from '../data/initialCards';
-import { articleContent as articleMeta } from '../data/content';
-import { useCardDrag } from '../hooks/useCardDrag';
-import { useCanvasStore } from '../store/canvasStore';
-import { ArxivIcon, AwardIcon, PaperIcon, GitHubLogoIcon } from './Icons';
+import { useRef } from "react";
+import { CardData } from "../data/initialCards";
+import { articleContent as articleMeta } from "../data/content";
+import { useCardDrag } from "../hooks/useCardDrag";
+import { useCanvasStore } from "../store/canvasStore";
+import { ArxivIcon, AwardIcon, PaperIcon, GitHubLogoIcon } from "./Icons";
 
-const articleSummaries: Record<string, { summary: string; authors?: string[] }> = {
-  'how-to-vllm-plugin': { summary: 'How we built a vLLM plugin without touching the source code.' },
-  'flashhead': { summary: 'Retrieval instead of classification for the LM head. 4.85× speedup, no retraining.' },
-  'cosmos-reason2-report': { summary: 'Took a VLM from OOM to running on Jetson Orin Nano. 4-bit quantization, sub-1W.' },
-  'optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin': { summary: 'Pruning and quantizing ViT for Orin. 2× speedup, <1% accuracy drop.' },
-  'how-to-prune-attention': { summary: 'Head pruning, channel pruning, embedding pruning. Which one actually works on hardware.' },
-  '2603.14591': { summary: 'Replacing the dense classification head with retrieval. 1.75× model-level speedup.' },
-  '4347835': { summary: 'Ny Teknik Rising Star award for engineering.' },
-  'flashhead-deep-dive': { summary: 'K-means took 6 hours. Balanced clusters were an accident. Why heads are the bottleneck.' },
+const articleSummaries: Record<
+  string,
+  { summary: string; authors?: string[] }
+> = {
+  "how-to-vllm-plugin": {
+    summary: "How we built a vLLM plugin without touching the source code.",
+  },
+  flashhead: {
+    summary:
+      "Retrieval instead of classification for the LM head. 4.85× speedup, no retraining.",
+  },
+  "cosmos-reason2-report": {
+    summary:
+      "Took a VLM from OOM to running on Jetson Orin Nano. 4-bit quantization, sub-1W.",
+  },
+  "optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin":
+    {
+      summary:
+        "Pruning and quantizing ViT for Orin. 2× speedup, <1% accuracy drop.",
+    },
+  "how-to-prune-attention": {
+    summary:
+      "Head pruning, channel pruning, embedding pruning. Which one actually works on hardware.",
+  },
+  "2603.14591": {
+    summary:
+      "Replacing the dense classification head with retrieval. 1.75× model-level speedup.",
+  },
+  "4347835": { summary: "Ny Teknik Rising Star award for engineering." },
+  "flashhead-deep-dive": {
+    summary:
+      "K-means took 6 hours. Balanced clusters were an accident. Why heads are the bottleneck.",
+  },
 };
 
-const smallCardLogoBadgeClass = 'w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 p-0';
-const smallCardLogoClass = 'w-6 h-6 object-scale-down';
-const baseCardClass = 'card-surface';
-const elevatedCardClass = 'card-surface absolute';
-const interactiveCardStateClass = 'hover:card-shadow-hover hover:scale-102';
+const smallCardLogoBadgeClass =
+  "w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 p-0";
+const smallCardLogoClass = "w-6 h-6 object-scale-down";
+const baseCardClass = "card-surface";
+const elevatedCardClass = "card-surface absolute";
+const interactiveCardStateClass = "hover:card-shadow-hover hover:scale-102";
 const draggableCardClass = `${interactiveCardStateClass}`;
-const cardContentTitleClass = 'surface-title text-sm leading-tight';
-const cardDividerClass = 'surface-divider pt-2';
+const cardContentTitleClass = "surface-title text-sm leading-tight";
+const cardDividerClass = "surface-divider pt-2";
 
-export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAnother: boolean }) {
+export function Card({
+  card,
+  isDraggingAnother,
+}: {
+  card: CardData;
+  isDraggingAnother: boolean;
+}) {
   const hoverTimeout = useRef<number | null>(null);
-  const { isDragging, hasMoved, handleMouseDown, currentPos } = useCardDrag(card.id);
+  const { isDragging, hasMoved, handleMouseDown, currentPos } = useCardDrag(
+    card.id,
+  );
   const bringToFront = useCanvasStore((s) => s.bringToFront);
   const highlightedCardId = useCanvasStore((s) => s.highlightedCardId);
   const isHighlighted = highlightedCardId === card.id;
-  const highlightClass = isHighlighted ? 'ring-2 ring-dracula-cyan ring-offset-2 ring-offset-dracula-bg' : '';
+  const highlightClass = isHighlighted
+    ? "ring-2 ring-dracula-cyan ring-offset-2 ring-offset-dracula-bg"
+    : "";
 
   const handleMouseEnter = () => {
     hoverTimeout.current = window.setTimeout(() => bringToFront(card.id), 150);
@@ -62,14 +97,14 @@ export function Card({ card, isDraggingAnother }: { card: CardData; isDraggingAn
     zIndex: card.zIndex,
   };
 
-  if (card.cardType === 'arxiv') {
-    const slug = card.link.split('/').pop() || '';
+  if (card.cardType === "arxiv") {
+    const slug = card.link.split("/").pop() || "";
     const content = articleSummaries[slug];
 
     return (
       <div
         data-card-id={card.id}
-className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
+        className={`${baseCardClass} w-72 ${isDragging ? "card-shadow-drag scale-105" : "card-shadow-base"} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -81,14 +116,24 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
             <div className={smallCardLogoBadgeClass}>
               <ArxivIcon className={smallCardLogoClass} />
             </div>
-            <span className="text-xs text-dracula-orange font-mono">{card.description}</span>
+            <span className="text-xs text-dracula-orange font-mono">
+              {card.description}
+            </span>
           </div>
           <h3 className={`${cardContentTitleClass} mb-2`}>{card.title}</h3>
           {content?.authors && (
-            <p className="text-xs text-dracula-comment line-clamp-1 mb-2">{content.authors.slice(0, 3).join(', ')} {content.authors.length > 3 ? `+${content.authors.length - 3}` : ''}</p>
+            <p className="text-xs text-dracula-comment line-clamp-1 mb-2">
+              {content.authors.slice(0, 3).join(", ")}{" "}
+              {content.authors.length > 3
+                ? `+${content.authors.length - 3}`
+                : ""}
+            </p>
           )}
           <div className={cardDividerClass}>
-            <button className="action-link action-link-orange" onClick={handleReadMoreClick}>
+            <button
+              className="action-link action-link-orange"
+              onClick={handleReadMoreClick}
+            >
               View Paper →
             </button>
           </div>
@@ -97,11 +142,11 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
     );
   }
 
-  if (card.cardType === 'paper') {
+  if (card.cardType === "paper") {
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-80 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
+        className={`${baseCardClass} w-80 ${isDragging ? "card-shadow-drag scale-105" : "card-shadow-base"} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -113,11 +158,16 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
             <div className={smallCardLogoBadgeClass}>
               <PaperIcon className={smallCardLogoClass} />
             </div>
-            <span className="text-xs text-dracula-orange font-mono">{card.description}</span>
+            <span className="text-xs text-dracula-orange font-mono">
+              {card.description}
+            </span>
           </div>
           <h3 className={`${cardContentTitleClass} mb-2`}>{card.title}</h3>
           <div className={cardDividerClass}>
-            <button className="action-link action-link-orange" onClick={handleReadMoreClick}>
+            <button
+              className="action-link action-link-orange"
+              onClick={handleReadMoreClick}
+            >
               View Paper →
             </button>
           </div>
@@ -126,11 +176,11 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
     );
   }
 
-  if (card.cardType === 'github') {
+  if (card.cardType === "github") {
     return (
       <div
         data-card-id={card.id}
-        className={`${elevatedCardClass} w-64 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
+        className={`${elevatedCardClass} w-64 ${isDragging ? "card-shadow-drag scale-105" : "card-shadow-base"} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -142,11 +192,16 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
             <div className={smallCardLogoBadgeClass}>
               <GitHubLogoIcon className={smallCardLogoClass} />
             </div>
-            <span className="text-xs text-dracula-comment font-mono">{card.description}</span>
+            <span className="text-xs text-dracula-comment font-mono">
+              {card.description}
+            </span>
           </div>
           <h3 className={`${cardContentTitleClass} mb-2`}>{card.title}</h3>
           <div className={cardDividerClass}>
-            <button className="action-link action-link-purple" onClick={handleReadMoreClick}>
+            <button
+              className="action-link action-link-purple"
+              onClick={handleReadMoreClick}
+            >
               Learn more →
             </button>
           </div>
@@ -155,18 +210,23 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
     );
   }
 
-  if (card.cardType === 'space') {
+  if (card.cardType === "space") {
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-[28rem] group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
+        className={`${baseCardClass} w-[28rem] group ${isDragging ? "card-shadow-drag scale-105" : "card-shadow-base"} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
         onMouseLeave={() => !isDraggingAnother && handleMouseLeave()}
         onClick={handleClick}
       >
-        <a href={card.link} target="_blank" rel="noopener" className="block relative">
+        <a
+          href={card.link}
+          target="_blank"
+          rel="noopener"
+          className="block relative"
+        >
           <img
             src="https://huggingface.co/datasets/embedl/documentation-images/resolve/main/Edge-Inference-Benchmarks/Qwen3.5__agx_orin.svg"
             alt={card.title}
@@ -176,8 +236,18 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
           <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <span className="badge badge-yellow gap-1 px-2 py-1">
               Open on HF
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
               </svg>
             </span>
           </div>
@@ -189,14 +259,14 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
     );
   }
 
-  if (card.cardType === 'youtube') {
-    let videoId = '';
-    if (card.link.includes('embed/')) {
-      videoId = card.link.split('/').pop() || '';
-    } else if (card.link.includes('watch?v=')) {
-      videoId = card.link.split('v=').pop() || '';
+  if (card.cardType === "youtube") {
+    let videoId = "";
+    if (card.link.includes("embed/")) {
+      videoId = card.link.split("/").pop() || "";
+    } else if (card.link.includes("watch?v=")) {
+      videoId = card.link.split("v=").pop() || "";
     } else {
-      videoId = card.link.split('/').pop() || '';
+      videoId = card.link.split("/").pop() || "";
     }
     const thumbnail = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
@@ -212,7 +282,7 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-80 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
+        className={`${baseCardClass} w-80 group ${isDragging ? "card-shadow-drag scale-105" : "card-shadow-base"} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -228,22 +298,28 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
           <div className="absolute inset-0 bg-black/30 group-hover:bg-black/40 transition-colors" />
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="w-12 h-12 rounded-full bg-dracula-red/90 flex items-center justify-center shadow-lg">
-              <svg className="w-6 h-6 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <svg
+                className="w-6 h-6 text-white ml-0.5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
                 <path d="M8 5v14l11-7z" />
               </svg>
             </div>
           </div>
-          <div className="absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-medium rounded bg-red-600 text-white">YouTube</div>
+          <div className="absolute top-2 left-2 px-1.5 py-0.5 text-[10px] font-medium rounded bg-red-600 text-white">
+            YouTube
+          </div>
         </div>
       </div>
     );
   }
 
-  if (card.cardType === 'award') {
+  if (card.cardType === "award") {
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-80 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
+        className={`${baseCardClass} w-80 group ${isDragging ? "card-shadow-drag scale-105" : "card-shadow-base"} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -265,11 +341,18 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
         </div>
 
         <div className="p-4">
-          <span className="text-xs text-dracula-orange font-mono">{card.description}</span>
+          <span className="text-xs text-dracula-orange font-mono">
+            {card.description}
+          </span>
           <h3 className={`${cardContentTitleClass} mt-2 mb-2`}>{card.title}</h3>
-          <p className="text-xs text-dracula-comment line-clamp-2 mb-3">{articleSummaries['4347835'].summary}</p>
+          <p className="text-xs text-dracula-comment line-clamp-2 mb-3">
+            {articleSummaries["4347835"].summary}
+          </p>
           <div className={cardDividerClass}>
-            <button className="action-link action-link-yellow" onClick={handleReadMoreClick}>
+            <button
+              className="action-link action-link-yellow"
+              onClick={handleReadMoreClick}
+            >
               View award →
             </button>
           </div>
@@ -278,13 +361,13 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
     );
   }
 
-  if (card.cardType === 'case-study') {
-    const slug = card.link.split('/').pop() || '';
+  if (card.cardType === "case-study") {
+    const slug = card.link.split("/").pop() || "";
     const content = articleMeta[slug];
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-72 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
+        className={`${baseCardClass} w-72 group ${isDragging ? "card-shadow-drag scale-105" : "card-shadow-base"} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -308,13 +391,24 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
         <div className="p-4">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h3 className={`${cardContentTitleClass} flex-1`}>{card.title}</h3>
-            {!content?.image && <span className="badge badge-orange shrink-0">Case Study</span>}
+            {!content?.image && (
+              <span className="badge badge-orange shrink-0">Case Study</span>
+            )}
           </div>
 
-          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">{articleSummaries['optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin'].summary}</p>
+          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">
+            {
+              articleSummaries[
+                "optimizing-vision-transformers-for-peak-performance-on-nvidia-jetson-agx-orinvidia-jetson-agx-orin"
+              ].summary
+            }
+          </p>
 
           <div className={cardDividerClass}>
-            <button className="action-link action-link-orange" onClick={handleReadMoreClick}>
+            <button
+              className="action-link action-link-orange"
+              onClick={handleReadMoreClick}
+            >
               View case study →
             </button>
           </div>
@@ -323,25 +417,26 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
     );
   }
 
-  if (card.cardType === 'deep-dive') {
-    const slug = card.link.split('/').pop() || '';
+  if (card.cardType === "deep-dive") {
+    const slug = card.link.split("/").pop() || "";
     const content = articleMeta[slug];
-    const summary = articleSummaries[slug]?.summary || content?.hook || '';
+    const summary = articleSummaries[slug]?.summary || content?.hook || "";
+    const cardImage = card.image || content?.image;
     return (
       <div
         data-card-id={card.id}
-        className={`${baseCardClass} w-72 group ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
+        className={`${baseCardClass} w-72 group ${isDragging ? "card-shadow-drag scale-105" : "card-shadow-base"} ${draggableCardClass} ${highlightClass}`}
         style={style}
         onMouseDown={handleMouseDown}
         onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
         onMouseLeave={() => !isDraggingAnother && handleMouseLeave()}
         onClick={handleClick}
       >
-        {content?.image && (
+        {cardImage && (
           <div className="relative h-28 overflow-hidden">
             <img
-              src={content.image}
-              alt={content.imageAlt || card.title}
+              src={cardImage}
+              alt={card.imageAlt || card.title}
               className="w-full h-full object-cover opacity-45 transition-transform duration-300 group-hover:scale-105"
             />
             <div className="media-fade-top" />
@@ -354,14 +449,21 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
         <div className="p-4">
           <div className="flex items-start justify-between gap-2 mb-2">
             <h3 className={`${cardContentTitleClass} flex-1`}>{card.title}</h3>
-            {!content?.image && <span className="badge badge-purple shrink-0">Deep Dive</span>}
+            {!cardImage && (
+              <span className="badge badge-purple shrink-0">Deep Dive</span>
+            )}
           </div>
 
-          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">{summary}</p>
+          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">
+            {summary}
+          </p>
 
           <div className={cardDividerClass}>
-            <button className="action-link action-link-purple" onClick={handleReadMoreClick}>
-              {slug === 'how-to-prune-attention' ? 'pruning deep dive' : slug === 'flashhead-deep-dive' ? 'flashhead notes' : 'read'}
+            <button
+              className="action-link action-link-purple"
+              onClick={handleReadMoreClick}
+            >
+              Learn more →
             </button>
           </div>
         </div>
@@ -369,14 +471,14 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
     );
   }
 
-  const slug = card.link.split('/').pop() || '';
+  const slug = card.link.split("/").pop() || "";
   const content = articleSummaries[slug];
-  const isImageCard = slug === 'cosmos-reason2-report';
+  const isImageCard = slug === "cosmos-reason2-report";
 
   return (
     <div
       data-card-id={card.id}
-      className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 'card-shadow-base'} ${draggableCardClass} ${highlightClass}`}
+      className={`${baseCardClass} w-72 ${isDragging ? "card-shadow-drag scale-105" : "card-shadow-base"} ${draggableCardClass} ${highlightClass}`}
       style={style}
       onMouseDown={handleMouseDown}
       onMouseEnter={() => !isDraggingAnother && handleMouseEnter()}
@@ -406,11 +508,16 @@ className={`${baseCardClass} w-72 ${isDragging ? 'card-shadow-drag scale-105' : 
         </div>
 
         {content?.summary && !isImageCard && (
-          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">{content.summary}</p>
+          <p className="text-xs text-dracula-comment line-clamp-2 mb-2">
+            {content.summary}
+          </p>
         )}
 
         <div className={cardDividerClass}>
-          <button className="action-link action-link-cyan" onClick={handleReadMoreClick}>
+          <button
+            className="action-link action-link-cyan"
+            onClick={handleReadMoreClick}
+          >
             Read more →
           </button>
         </div>

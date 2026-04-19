@@ -1049,11 +1049,11 @@ export function PreviewModal() {
             </p>
           )}
 
-          {content?.image && (
+          {(content?.image || previewCard?.image) && (
             <div className="mb-6 rounded-xl overflow-hidden border border-dracula-bg-light">
               <img
-                src={content.image}
-                alt={content.imageAlt || previewCard.title}
+                src={previewCard?.image || content?.image}
+                alt={previewCard?.imageAlt || content?.imageAlt || previewCard.title}
                 className="w-full"
               />
             </div>

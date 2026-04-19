@@ -3,11 +3,12 @@ title: "Cross-Entropy Loss"
 tags: ["Mathematics", "Foundations", "Loss Functions", "Machine Learning"]
 kind: "deep-dive"
 hook: "How wrong are my predictions compared to the ground truth? Understanding the core loss function for classification."
+image: "/assets/cross-entropy-loss.png"
+imageAlt: "Cross-entropy loss visualization"
 keyPoints:
   - "Cross-entropy measures the difference between predicted and true probability distributions"
   - "For classification, we convert raw logits to probabilities using softmax"
   - "The -log transformation penalizes confident wrong predictions heavily"
-related: ["how-to-prune-attention", "flashhead-deep-dive"]
 ---
 
 # Cross-Entropy Loss
@@ -32,7 +33,7 @@ To make logits meaningful, we convert them into probabilities using the **softma
 Given logits vector \( z = [z_0, z_1, ..., z_n] \), the probability of class \( j \) is:
 
 \[
- p_j  = softmax(z_j) = \frac{e^{z_j}}{\sum_k e^{z_k}} \tag{1}
+ p_j  = softmax(z_j) = \frac{e^{z_j}}{\sum_k e^{z_k}}.
 \]
 
 ### Why softmax?
@@ -42,16 +43,18 @@ Given logits vector \( z = [z_0, z_1, ..., z_n] \), the probability of class \( 
 - Amplifies large scores while suppressing smaller ones
 
 Properties:
-- \( p_j \in (0,1) \)
+- $ p_j \in (0,1) $
 - \( \sum_j p_j = 1 \)
+
 
 
 ## Cross-Entropy Loss
 
 Given the ground truth class index \( i \), the cross-entropy loss is: 
 
+
 \[
- L = -log(p_i). \tag{2}
+ L = -log(p_i) = -log(\frac{e^{z_j}}{\sum_k e^{z_k}}). 
 \]
 
 This measures how much probability mass the model assigns to the correct class.
@@ -73,10 +76,7 @@ Let's look at a simple example. Assume we have a dataset of only 4 classes (e.g.
 
 Let: 
 - Ground truth: class \( i = 3 \)
-- Logits:  
-  \[
-  z = [0.0, 0.2, 4.0, 3.2]
-  \]
+- Logits:  $ z = [0.0, 0.2, 4.0, 3.2] $
 
 After applying softmax:
 
@@ -167,7 +167,7 @@ def cross_entropy_loss(
 
 A key reason for the popularity of cross-entropy with softmax is its clean gradient.
 
-Let \( p_j = softmax(z_j) \), then:
+Let $ p_j = softmax(z_j) $ , then:
 
 \[
 p_j = \frac{e^{z_j}}{\sum_k e^{z_k}}
@@ -219,7 +219,6 @@ or, more compactly in vector form:
 
 where \( y \) is the one-hot encoded ground truth vector.
 
-We used \( \log(ab) = \log(a) + \log(b) \) and \( \frac{d}{dx}\log(x) = \frac{1}{x} \) and \( \frac{d}{dx}e^x = e^x \)
 
 We used the following identities:
 

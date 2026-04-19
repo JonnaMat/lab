@@ -17,6 +17,8 @@ export interface CardData {
     | "youtube"
     | "case-study"
     | "deep-dive";
+  image?: string;
+  imageAlt?: string;
 }
 
 export interface Viewport {
@@ -190,13 +192,15 @@ export const DEFAULT_CARDS: CardData[] = [
   },
   {
     id: "cross-entropy-loss",
-    x: 1100,
-    y: 550,
+    x: 696,
+    y: 1510,
     zIndex: 1,
     title: "Cross-Entropy Loss",
     description:
       "Understanding the core loss function for classification - how wrong are my predictions compared to the ground truth?",
     type: "article",
+    image: "/assets/cross-entropy-loss.png",
+    imageAlt: "Cross-entropy loss visualization",
     link: "cross-entropy-loss",
     cardType: "deep-dive",
   },
