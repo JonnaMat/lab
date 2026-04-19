@@ -2,6 +2,7 @@ import { marked } from 'marked';
 import flashheadDeepDive from './flashhead-deep-dive.md?raw';
 import howToPruneAttention from './how-to-prune-attention.md?raw';
 import cosmosReason2Report from './cosmos-reason2-report.md?raw';
+import crossEntropyLoss from './cross-entropy-loss.md?raw';
 
 export interface CardFrontmatter {
   title: string;
@@ -27,6 +28,7 @@ const cardRegistry: Record<string, string> = {
   'flashhead-deep-dive': flashheadDeepDive,
   'how-to-prune-attention': howToPruneAttention,
   'cosmos-reason2-report': cosmosReason2Report,
+  'cross-entropy-loss': crossEntropyLoss,
 };
 
 export function loadCard(slug: string): CardContent | null {

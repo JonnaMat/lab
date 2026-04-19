@@ -189,6 +189,18 @@ export const DEFAULT_CARDS: CardData[] = [
     cardType: "deep-dive",
   },
   {
+    id: "cross-entropy-loss",
+    x: 1100,
+    y: 550,
+    zIndex: 1,
+    title: "Cross-Entropy Loss",
+    description:
+      "Understanding the core loss function for classification - how wrong are my predictions compared to the ground truth?",
+    type: "article",
+    link: "cross-entropy-loss",
+    cardType: "deep-dive",
+  },
+  {
     id: "c16",
     x: 1972,
     y: 41,

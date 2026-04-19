@@ -222,6 +222,7 @@ export function PreviewModal() {
     "flashhead-deep-dive",
     "how-to-prune-attention",
     "cosmos-reason2-report",
+    "cross-entropy-loss",
   ];
   const [markdownContent, setMarkdownContent] = useState<ReturnType<
     typeof loadCard
