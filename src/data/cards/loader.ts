@@ -1,6 +1,8 @@
-import { marked } from 'marked';
+import { marked, Renderer } from 'marked';
+import hljs from 'highlight.js';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import 'highlight.js/styles/github-dark.css';
 import flashheadDeepDive from './flashhead-deep-dive.md?raw';
 import howToPruneAttention from './how-to-prune-attention.md?raw';
 import cosmosReason2Report from './cosmos-reason2-report.md?raw';
@@ -123,5 +125,14 @@ function processLatex(markdown: string): string {
 
 export function parseMarkdown(markdown: string): string {
   const processed = processLatex(markdown);
-  return marked.parse(processed, { async: false }) as string;
+  
+  const renderer = new Renderer();
+  renderer.code = ({ text, lang }) => {
+    const language = lang && hljs.getLanguage(lang) ? lang : 'plaintext';
+    const highlighted = hljs.highlight(text, { language }).value;
+    return `<pre><code class="hljs language-${language}">${highlighted}</code></pre>`;
+  };
+  
+  marked.setOptions({ renderer, async: false });
+  return marked.parse(processed) as string;
 }
